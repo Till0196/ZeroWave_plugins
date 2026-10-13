@@ -1,0 +1,15 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: ['config:recommended'],
+  timezone: 'Asia/Tokyo',
+  packageRules: [
+    {
+      matchUpdateTypes: ['minor', 'patch', 'pin', 'digest'],
+      automerge: true,
+    },
+    {
+      matchManagers: ['github-actions'],
+      automerge: true,
+    },
+  ],
+}

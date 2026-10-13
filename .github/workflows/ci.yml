@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rust:
+    name: Rust
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: rust-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: rust-
+
+      - name: Add the wasm targets
+        run: rustup target add wasm32-unknown-unknown wasm32-wasip1
+
+      - name: Format
+        run: cargo fmt --all --check
+
+      - name: Build the wasm32-unknown-unknown plugins
+        run: cargo build --release --target wasm32-unknown-unknown -p zerowave-tsmf -p zerowave-pipe -p zerowave-video-filter
+
+      - name: Build the data broadcast plugin
+        run: cargo build --profile plugin --target wasm32-wasip1 -p zerowave-databroadcast
+
+      - name: Test
+        run: cargo test --workspace
+
+  typescript:
+    name: TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: zerowave_plugins
+          persist-credentials: false
+
+      - name: Link ZeroWave from cargo
+        working-directory: zerowave_plugins
+        run: |
+          sdk="$(cargo metadata --format-version 1 | jq -r '.packages[] | select(.name == "zwsdk") | .manifest_path')"
+          ln -s "$(dirname "$(dirname "$sdk")")" ../zerowave
+
+      - name: Check and build clock-comments
+        working-directory: zerowave_plugins/clock-comments
+        run: |
+          npm ci
+          npm run check
+          npm run build
+
+  rife:
+    name: RIFE
+    uses: ./.github/workflows/rife.yml

@@ -1,0 +1,54 @@
+[workspace]
+resolver = "3"
+members = ["tsmf", "pipe", "video-filter", "databroadcast", "databroadcast/bml", "databroadcast/web"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.91"
+license = "Apache-2.0"
+
+[workspace.lints.rust]
+missing_debug_implementations = "warn"
+unsafe_op_in_unsafe_fn = "deny"
+
+# zwsdk は guest として依存する。host（wasmtime）が要るのは例とテストだけ。
+[workspace.dependencies]
+zwsdk = { git = "https://github.com/Till0196/ZeroWave", default-features = false }
+zwcore = { package = "zerowave-core", git = "https://github.com/Till0196/ZeroWave" }
+mediadecoder = { git = "https://github.com/Till0196/ZeroWave" }
+mpegts = { git = "https://github.com/Till0196/coax-rs" }
+mmttlv = { git = "https://github.com/Till0196/coax-rs" }
+isdb = { git = "https://github.com/Till0196/coax-rs" }
+
+# opt-level を "s" にすると 4K のレンダリングが大きく遅くなるので 3 のまま。
+[profile.plugin]
+inherits = "release"
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
+
+# テストで wasm をビルドする Cranelift は、最適化なしだと遅すぎる。
+[profile.dev.package.cranelift-codegen]
+opt-level = 2
+[profile.dev.package.regalloc2]
+opt-level = 2
+[profile.dev.package.wasmtime-internal-cranelift]
+opt-level = 2
+
+# target の容量を抑えるため、デバッグ情報は自分の crate は行番号だけ、依存は無し。
+[profile.dev]
+debug = "line-tables-only"
+
+[profile.dev.package."*"]
+debug = false
+
+[profile.quick]
+inherits = "release"
+opt-level = 2
+lto = false
+codegen-units = 256
+incremental = true
+debug = false
+strip = true

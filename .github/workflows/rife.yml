@@ -1,0 +1,207 @@
+name: RIFE
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        default: dev
+
+permissions:
+  contents: read
+
+env:
+  CUDA_VERSION: "13.2.86"
+  CUDART_LINUX_SHA256: "d6be2b3546fa93e5dec9e3d118d31f9540d0b7af5319ee3c6726f202dfc5b5d4"
+  CRT_LINUX_SHA256: "174ad29ab90c9301bd25f32f935345e65f19fbb0f39c15788daae25b0e924892"
+  CUDART_WINDOWS_SHA256: "024e0c1055343d9d2a7d35c90fb7695db14cc2f05bb962198eb18b92c73b32be"
+  CRT_WINDOWS_SHA256: "a8d61bacb23bbc7131b9ccff0876abec3edb68f3b767bfb0377e5571892e9c19"
+  TENSORRT_VERSION: "10.16.1.11"
+  TENSORRT_CUDA: "13.2"
+  NVINFER_SHA256: "3d2caaf0796fab517fffea327727ef829f46510fb1cd6bcd0efc84cb3b1ef002"
+  NVINFER_HEADERS_SHA256: "8447e3fc65f46bf28907c7d03c39f3fa86ef2bf6ec46afb848ea6533fb7fcd65"
+  NVONNXPARSERS_SHA256: "cd379a1d03d92f104d5659e0cb62302a781a17806ba103c01a699da5c8648dd6"
+  NVONNXPARSERS_DEV_SHA256: "9904cbbc32d4b0f8eb665ffd2758ee10b74a3a3afb19c8e164b2c4a83a98bcd1"
+  TENSORRT_WINDOWS_SHA256: "7c853a0e8e9e65935add3d20f89ebfa1971f8e5ab5dce25d4532aecda52c232b"
+
+jobs:
+  zwtrt-linux:
+    name: zwtrt (Linux)
+    runs-on: ubuntu-latest
+    env:
+      ARCHIVE: zwtrt-${{ inputs.version }}-x86_64-linux
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/cache@v6
+        id: nv
+        with:
+          path: ${{ runner.temp }}/nv
+          key: nv-linux-${{ env.TENSORRT_VERSION }}-cuda${{ env.CUDA_VERSION }}
+
+      - name: Download TensorRT and the CUDA runtime
+        if: steps.nv.outputs.cache-hit != 'true'
+        run: |
+          nv="$RUNNER_TEMP/nv"
+          dl="$RUNNER_TEMP/dl"
+          mkdir -p "$nv/tensorrt/include" "$nv/tensorrt/lib" "$nv/cuda" "$dl/root"
+          fetch() {
+            curl --proto '=https' --tlsv1.2 -sSfL -o "$dl/$3" "$1"
+            echo "$2  $dl/$3" | sha256sum -c -
+          }
+          redist=https://developer.download.nvidia.com/compute/cuda/redist
+          fetch "$redist/cuda_cudart/linux-x86_64/cuda_cudart-linux-x86_64-$CUDA_VERSION-archive.tar.xz" "$CUDART_LINUX_SHA256" cudart.tar.xz
+          fetch "$redist/cuda_crt/linux-x86_64/cuda_crt-linux-x86_64-$CUDA_VERSION-archive.tar.xz" "$CRT_LINUX_SHA256" crt.tar.xz
+          for f in cudart crt; do
+            tar -xJf "$dl/$f.tar.xz" -C "$nv/cuda" --strip-components=1
+          done
+          ln -s lib "$nv/cuda/lib64"
+          repo=https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64
+          suffix="${TENSORRT_VERSION}-1+cuda${TENSORRT_CUDA}_amd64.deb"
+          fetch "$repo/libnvinfer10_$suffix" "$NVINFER_SHA256" nvinfer.deb
+          fetch "$repo/libnvinfer-headers-dev_$suffix" "$NVINFER_HEADERS_SHA256" nvinfer-headers.deb
+          fetch "$repo/libnvonnxparsers10_$suffix" "$NVONNXPARSERS_SHA256" nvonnxparsers.deb
+          fetch "$repo/libnvonnxparsers-dev_$suffix" "$NVONNXPARSERS_DEV_SHA256" nvonnxparsers-dev.deb
+          for f in "$dl"/*.deb; do
+            dpkg-deb -x "$f" "$dl/root"
+          done
+          cp -a "$dl/root/usr/include/x86_64-linux-gnu/." "$nv/tensorrt/include/"
+          lib="$dl/root/usr/lib/x86_64-linux-gnu"
+          full="${TENSORRT_VERSION%.*}"
+          cp "$lib/libnvinfer.so.$full" "$lib/libnvonnxparser.so.$full" "$nv/tensorrt/lib/"
+          for name in nvinfer nvonnxparser; do
+            ln -s "lib$name.so.$full" "$nv/tensorrt/lib/lib$name.so.${full%%.*}"
+            ln -s "lib$name.so.$full" "$nv/tensorrt/lib/lib$name.so"
+          done
+          rm -rf "$dl"
+
+      - name: Build
+        run: video-filter/zwtrt/build.sh "$RUNNER_TEMP/nv/tensorrt" "$RUNNER_TEMP/nv/cuda"
+
+      - name: Make the archive
+        run: |
+          mkdir -p "release/$ARCHIVE"
+          cp LICENSE NOTICE video-filter/zwtrt/zwtrt "release/$ARCHIVE/"
+          cd release
+          tar -czf "$ARCHIVE.tar.gz" "$ARCHIVE"
+          shasum -a 256 "$ARCHIVE.tar.gz" > "$ARCHIVE.tar.gz.sha256"
+          rm -r "$ARCHIVE"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: rife-zwtrt-linux
+          path: release/*
+          if-no-files-found: error
+
+  zwtrt-windows:
+    name: zwtrt (Windows)
+    runs-on: windows-latest
+    env:
+      ARCHIVE: zwtrt-${{ inputs.version }}-x86_64-windows
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/cache@v6
+        id: nv
+        with:
+          path: ${{ runner.temp }}/nv
+          key: nv-windows-${{ env.TENSORRT_VERSION }}-cuda${{ env.CUDA_VERSION }}
+
+      - name: Download TensorRT and the CUDA runtime
+        if: steps.nv.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          nv="$(cygpath -u "$RUNNER_TEMP")/nv"
+          dl="$(cygpath -u "$RUNNER_TEMP")/dl"
+          mkdir -p "$nv" "$dl"
+          fetch() {
+            curl --proto '=https' --tlsv1.2 -sSfL -o "$dl/$3" "$1"
+            echo "$2  $dl/$3" | sha256sum -c -
+          }
+          redist=https://developer.download.nvidia.com/compute/cuda/redist
+          fetch "$redist/cuda_cudart/windows-x86_64/cuda_cudart-windows-x86_64-$CUDA_VERSION-archive.zip" "$CUDART_WINDOWS_SHA256" cudart.zip
+          fetch "$redist/cuda_crt/windows-x86_64/cuda_crt-windows-x86_64-$CUDA_VERSION-archive.zip" "$CRT_WINDOWS_SHA256" crt.zip
+          fetch "https://developer.download.nvidia.com/compute/machine-learning/tensorrt/${TENSORRT_VERSION%.*}/zip/TensorRT-$TENSORRT_VERSION.Windows.amd64.cuda-$TENSORRT_CUDA.zip" "$TENSORRT_WINDOWS_SHA256" tensorrt.zip
+          python - "$(cygpath -w "$dl")" "$(cygpath -w "$nv")" <<'PY'
+          import pathlib, sys, zipfile
+          dl, nv = map(pathlib.Path, sys.argv[1:])
+          def extract(name, into, keep):
+              with zipfile.ZipFile(dl / name) as z:
+                  for info in z.infolist():
+                      parts = info.filename.split("/", 1)
+                      if info.is_dir() or len(parts) < 2 or not keep(parts[1]):
+                          continue
+                      out = nv / into / parts[1]
+                      out.parent.mkdir(parents=True, exist_ok=True)
+                      out.write_bytes(z.read(info))
+          for name in ("cudart.zip", "crt.zip"):
+              extract(name, "cuda", lambda p: p.startswith(("include/", "lib/x64/")))
+          extract("tensorrt.zip", "tensorrt", lambda p: p.startswith("include/") or p in ("lib/nvinfer_10.lib", "lib/nvonnxparser_10.lib"))
+          PY
+          rm -rf "$dl"
+
+      - name: Build
+        shell: cmd
+        run: |
+          for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -find VC\Auxiliary\Build\vcvars64.bat`) do set "VCVARS=%%i"
+          call video-filter\zwtrt\build.cmd "%RUNNER_TEMP%\nv\tensorrt" "%RUNNER_TEMP%\nv\cuda"
+
+      - name: Make the archive
+        shell: bash
+        run: |
+          mkdir -p "release/$ARCHIVE"
+          cp LICENSE NOTICE video-filter/zwtrt/zwtrt.exe "release/$ARCHIVE/"
+          cd release
+          7z a -bd -tzip "$ARCHIVE.zip" "$ARCHIVE" > /dev/null
+          sha256sum "$ARCHIVE.zip" > "$ARCHIVE.zip.sha256"
+          rm -r "$ARCHIVE"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: rife-zwtrt-windows
+          path: release/*
+          if-no-files-found: error
+
+  zwcoreml:
+    name: zwcoreml (macOS)
+    runs-on: macos-15
+    env:
+      ARCHIVE: zwcoreml-${{ inputs.version }}-macos
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Build
+        working-directory: video-filter/zwcoreml
+        run: |
+          rustup target add aarch64-apple-darwin x86_64-apple-darwin
+          cargo build --release --target aarch64-apple-darwin
+          cargo build --release --target x86_64-apple-darwin
+          lipo -create -output zwcoreml target/aarch64-apple-darwin/release/zwcoreml target/x86_64-apple-darwin/release/zwcoreml
+
+      - name: Sign
+        working-directory: video-filter/zwcoreml
+        run: |
+          codesign --force --sign - zwcoreml
+          codesign --verify --strict zwcoreml
+
+      - name: Make the archive
+        run: |
+          mkdir -p "release/$ARCHIVE"
+          cp LICENSE NOTICE "release/$ARCHIVE/"
+          cp video-filter/zwcoreml/zwcoreml video-filter/zwcoreml/README.md video-filter/zwcoreml/convert.py "release/$ARCHIVE/"
+          cd release
+          ditto -c -k --keepParent "$ARCHIVE" "$ARCHIVE.zip"
+          shasum -a 256 "$ARCHIVE.zip" > "$ARCHIVE.zip.sha256"
+          rm -r "$ARCHIVE"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: rife-zwcoreml
+          path: release/*
+          if-no-files-found: error

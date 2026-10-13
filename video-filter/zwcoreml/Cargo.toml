@@ -1,0 +1,33 @@
+[package]
+name = "zwcoreml"
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+description = "RIFE を CoreML（ANE）と Metal で回す、ZeroWave の外部プロセスの補間の実装（macOS）"
+publish = false
+
+# wasm のビルドに macOS の依存を混ぜないよう、zerowave_plugins の workspace には入れない。
+[workspace]
+
+[[bin]]
+name = "zwcoreml"
+path = "src/main.rs"
+
+[dependencies]
+zwsdk = { git = "https://github.com/Till0196/ZeroWave", default-features = false }
+
+# バージョンは zerowave の core・deck に揃える。
+[target.'cfg(target_os = "macos")'.dependencies]
+libc = "0.2"
+block2 = "0.6"
+objc2 = "0.6"
+objc2-foundation = "0.3"
+objc2-core-foundation = "0.3"
+objc2-core-ml = { version = "0.3", features = ["objc2-core-video"] }
+objc2-core-video = { version = "0.3", features = ["objc2-io-surface"] }
+objc2-io-surface = "0.3"
+objc2-metal = { version = "0.3", features = ["objc2-io-surface"] }
+
+[profile.release]
+lto = "thin"
+strip = true

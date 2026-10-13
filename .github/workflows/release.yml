@@ -1,0 +1,140 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*-v[0-9]+.[0-9]+.[0-9]+*"
+
+permissions:
+  contents: write
+
+jobs:
+  plugin:
+    name: Plugin
+    runs-on: ubuntu-latest
+    outputs:
+      plugin: ${{ steps.tag.outputs.plugin }}
+      version: ${{ steps.tag.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: zerowave_plugins
+          persist-credentials: false
+
+      - name: Read the tag
+        id: tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          plugin="${TAG%-v*}"
+          version="${TAG#"$plugin"-v}"
+          case "$plugin" in
+            tsmf) file=zerowave_tsmf.wasm ;;
+            pipe) file=pipe.wasm ;;
+            video-filter) file=video_filter.wasm ;;
+            databroadcast) file=databroadcast.wasm ;;
+            clock-comments) file=clock-comments.wasm ;;
+            *) echo "unknown plugin: $plugin" >&2; exit 1 ;;
+          esac
+          {
+            echo "PLUGIN=$plugin"
+            echo "VERSION=$version"
+            echo "FILE=$file"
+            echo "ARCHIVE=$plugin-$version"
+          } >> "$GITHUB_ENV"
+          {
+            echo "plugin=$plugin"
+            echo "version=$version"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Link ZeroWave from cargo
+        if: env.PLUGIN == 'clock-comments'
+        working-directory: zerowave_plugins
+        run: |
+          sdk="$(cargo metadata --format-version 1 | jq -r '.packages[] | select(.name == "zwsdk") | .manifest_path')"
+          ln -s "$(dirname "$(dirname "$sdk")")" ../zerowave
+
+      - name: Build a wasm32-unknown-unknown plugin
+        if: env.PLUGIN == 'tsmf' || env.PLUGIN == 'pipe' || env.PLUGIN == 'video-filter'
+        working-directory: zerowave_plugins
+        run: |
+          rustup target add wasm32-unknown-unknown
+          cargo build --release --target wasm32-unknown-unknown -p "zerowave-$PLUGIN"
+          cp "target/wasm32-unknown-unknown/release/zerowave_${PLUGIN//-/_}.wasm" "$RUNNER_TEMP/$FILE"
+
+      - name: Build the data broadcast plugin
+        if: env.PLUGIN == 'databroadcast'
+        working-directory: zerowave_plugins
+        run: |
+          rustup target add wasm32-wasip1
+          cargo build --profile plugin --target wasm32-wasip1 -p zerowave-databroadcast
+          cp target/wasm32-wasip1/plugin/zerowave_databroadcast.wasm "$RUNNER_TEMP/$FILE"
+
+      - name: Build the TypeScript plugin
+        if: env.PLUGIN == 'clock-comments'
+        working-directory: zerowave_plugins/clock-comments
+        run: |
+          npm ci
+          npm run build
+          cp dist/clock-comments.wasm "$RUNNER_TEMP/$FILE"
+
+      - name: Make the archive
+        working-directory: zerowave_plugins
+        run: |
+          mkdir -p "release/$ARCHIVE"
+          cp LICENSE NOTICE "$PLUGIN/README.md" "release/$ARCHIVE/"
+          if [ -d "$PLUGIN/images" ]; then
+            cp -r "$PLUGIN/images" "release/$ARCHIVE/"
+          fi
+          if [ "$PLUGIN" = video-filter ]; then
+            cp -r LICENSES "release/$ARCHIVE/"
+            cp -r video-filter/examples/shaders "release/$ARCHIVE/video_filter"
+          fi
+          cp "$RUNNER_TEMP/$FILE" "release/$ARCHIVE/"
+          cd release
+          zip -qr "$ARCHIVE.zip" "$ARCHIVE"
+          shasum -a 256 "$ARCHIVE.zip" > "$ARCHIVE.zip.sha256"
+          rm -r "$ARCHIVE"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-plugin
+          path: zerowave_plugins/release/*
+          if-no-files-found: error
+
+  rife:
+    name: RIFE
+    needs: plugin
+    if: needs.plugin.outputs.plugin == 'video-filter'
+    uses: ./.github/workflows/rife.yml
+    with:
+      version: ${{ needs.plugin.outputs.version }}
+
+  release:
+    name: Release
+    needs: [plugin, rife]
+    if: ${{ !cancelled() && !failure() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: release
+          merge-multiple: true
+
+      - name: Create the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          PLUGIN: ${{ needs.plugin.outputs.plugin }}
+          VERSION: ${{ needs.plugin.outputs.version }}
+        run: |
+          prerelease=()
+          if [[ "$VERSION" == *-* ]]; then
+            prerelease=(--prerelease)
+          fi
+          gh release create "$TAG" release/* \
+            --repo "${{ github.repository }}" \
+            --title "$PLUGIN $VERSION" \
+            --generate-notes \
+            --verify-tag \
+            "${prerelease[@]}"

@@ -1,0 +1,29 @@
+[package]
+name = "zerowave-databroadcast"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "データ放送（BML・HTML5・Hybridcast）のプラグイン。本体と同じフォルダーの plugins/ に置く"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[lints]
+workspace = true
+
+[dependencies]
+bml = { path = "bml" }
+web = { path = "web" }
+zwsdk.workspace = true
+isdb.workspace = true
+mpegts.workspace = true
+log = "0.4"
+
+[dev-dependencies]
+zwcore.workspace = true
+mediadecoder.workspace = true
+zwsdk = { workspace = true, features = ["host"] }
+png = "0.18"
+miniz_oxide = "0.8"
+mmttlv.workspace = true

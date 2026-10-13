@@ -1,0 +1,25 @@
+[package]
+name = "zerowave-video-filter"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "ZeroWave のプラグイン: 映像フィルター（mpv のユーザーシェーダーと WGSL、フレーム補間）"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[lints]
+workspace = true
+
+[dependencies]
+zwsdk.workspace = true
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# glsl-in だけではビルドできないので wgsl-in も要る（naga 側の cfg の取りこぼし）。
+naga = { version = "30.0.1", default-features = false, features = ["glsl-in", "wgsl-out", "wgsl-in"] }
+
+[dev-dependencies]
+zwcore.workspace = true
+zwsdk = { workspace = true, features = ["host"] }

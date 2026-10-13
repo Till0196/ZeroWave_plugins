@@ -1,0 +1,35 @@
+{
+  "name": "zerowave-clock-comments",
+  "version": "0.2.0",
+  "private": true,
+  "description": "ZeroWave の層: いまの時刻を五秒おきにニコニコ風に流す（TypeScript → wasm）",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "build:js": "esbuild src/index.ts --bundle --format=esm --target=es2020 --outfile=dist/index.js",
+    "build": "npm run build:js && ../../zerowave/sdk/fetch-javy.sh && ../../zerowave/sdk/bin/javy build -C plugin=../../zerowave/sdk/javy/zwjavy.wasm dist/index.js -o dist/clock-comments.wasm && node ../../zerowave/sdk/ts/bin/zw-stamp.mjs dist/clock-comments.wasm",
+    "check": "tsc --noEmit",
+    "install:local": "npm run build && mkdir -p ${ZW_PLUGINS:?ZW_PLUGINS にプラグインのフォルダーを} && cp dist/clock-comments.wasm $ZW_PLUGINS/"
+  },
+  "dependencies": {
+    "@xpadev-net/niconicomments": "^0.4.1",
+    "zwsdk": "file:../../zerowave/sdk/ts"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "typescript": "^5.6.0"
+  },
+  "zerowave": {
+    "hooks": [
+      "layer"
+    ],
+    "layer": {
+      "above": "captions",
+      "wants": [
+        "clock",
+        "area"
+      ],
+      "fps": 60
+    }
+  }
+}

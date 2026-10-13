@@ -1,0 +1,23 @@
+[package]
+name = "zerowave-tsmf"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "ZeroWave のプラグイン: ケーブルの多重化フレーム（TSMF）を分離する"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[lints]
+workspace = true
+
+[dependencies]
+zwsdk.workspace = true
+isdb.workspace = true
+mpegts.workspace = true
+mmttlv.workspace = true
+
+[dev-dependencies]
+zwsdk = { workspace = true, features = ["host"] }
