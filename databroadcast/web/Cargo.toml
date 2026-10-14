@@ -11,7 +11,7 @@ workspace = true
 
 [dependencies]
 blitz-dom = { git = "https://github.com/Till0196/blitz", rev = "ec66a911226e9242f63236c7580167fa741a6875", default-features = false, features = ["svg", "autofocus", "custom-widget", "floats", "woff"] }
-blitz-html = { git = "https://github.com/Till0196/blitz", rev = "ec66a911226e9242f63236c7580167fa741a6875", default-features = false }
+blitz-html = { git = "https://github.com/Till0196/blitz", rev = "1c1e78c54841d2e47c511edfa2917a6b89a1915c", default-features = false }
 blitz-paint = { git = "https://github.com/Till0196/blitz", rev = "ec66a911226e9242f63236c7580167fa741a6875", default-features = false, features = ["svg", "custom-widget"] }
 blitz-traits = { git = "https://github.com/Till0196/blitz", rev = "ec66a911226e9242f63236c7580167fa741a6875", default-features = false }
 blitz-vibey-script = { git = "https://github.com/Till0196/blitz", rev = "ec66a911226e9242f63236c7580167fa741a6875", default-features = false }
