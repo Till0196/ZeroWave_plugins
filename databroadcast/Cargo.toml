@@ -25,5 +25,5 @@ zwcore.workspace = true
 mediadecoder.workspace = true
 zwsdk = { workspace = true, features = ["host"] }
 png = "0.18"
-miniz_oxide = "0.8"
+miniz_oxide = "0.9"
 mmttlv.workspace = true
