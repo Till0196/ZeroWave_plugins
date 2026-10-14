@@ -11,5 +11,11 @@
       matchManagers: ['github-actions'],
       automerge: true,
     },
+    {
+      // fork の develop に載せた rev を使うので、既定のブランチの digest には替えない。
+      matchDepNames: ['/^blitz-/', 'taffy'],
+      matchUpdateTypes: ['digest'],
+      enabled: false,
+    },
   ],
 }
