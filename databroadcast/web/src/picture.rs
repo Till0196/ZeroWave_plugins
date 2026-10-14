@@ -67,7 +67,7 @@ pub fn decode(
         };
     }
     if kind.contains("jpeg") || kind.contains("jpg") || bytes.starts_with(&[0xff, 0xd8]) {
-        let mut decoder = zune_jpeg::JpegDecoder::new(bytes);
+        let mut decoder = zune_jpeg::JpegDecoder::new(zune_core::bytestream::ZCursor::new(bytes));
         decoder.set_options(
             zune_core::options::DecoderOptions::default()
                 .jpeg_set_out_colorspace(zune_core::colorspace::ColorSpace::RGBA)

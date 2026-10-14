@@ -4,7 +4,7 @@
 //! スタイルシートの字句解析と構文。BML の CSS は CSS 2 の部分集合に放送の特性を足したもの
 //! （STD-B24 第二分冊 (2/2) 付属 2）。どの名前がどう効くかは [`crate::document::style`]。
 
-use cssparser::{Delimiter, Parser, ParserInput, Token};
+use cssparser::{Delimiter, Parser, Token};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
@@ -114,15 +114,14 @@ pub struct Rule {
 }
 
 pub fn parse_stylesheet(text: &str) -> Vec<Rule> {
-    let mut input = ParserInput::new(text);
-    let mut parser = Parser::new(&mut input);
+    let mut parser = Parser::new(text);
     let mut rules = Vec::new();
     rules_into(&mut parser, &mut rules);
     rules
 }
 
 /// `@media` の中は同じ規則として読み（TR-B14 の C プロファイル）、ほかの `@` は飛ばす。
-fn rules_into(parser: &mut Parser<'_, '_>, rules: &mut Vec<Rule>) {
+fn rules_into(parser: &mut Parser<'_>, rules: &mut Vec<Rule>) {
     loop {
         let start = parser.state();
         let Ok(token) = parser.next() else {
@@ -136,7 +135,7 @@ fn rules_into(parser: &mut Parser<'_, '_>, rules: &mut Vec<Rule>) {
                     Delimiter::CurlyBracketBlock | Delimiter::Semicolon,
                     |p| {
                         while p.next().is_ok() {}
-                        Ok::<(), cssparser::ParseError<'_, ()>>(())
+                        Ok::<(), cssparser::ParseError<()>>(())
                     },
                 );
                 if let Ok(Token::CurlyBracketBlock) = parser.next() {
@@ -146,7 +145,7 @@ fn rules_into(parser: &mut Parser<'_, '_>, rules: &mut Vec<Rule>) {
                         } else {
                             while p.next().is_ok() {}
                         }
-                        Ok::<(), cssparser::ParseError<'_, ()>>(())
+                        Ok::<(), cssparser::ParseError<()>>(())
                     });
                 }
             }
@@ -154,14 +153,14 @@ fn rules_into(parser: &mut Parser<'_, '_>, rules: &mut Vec<Rule>) {
                 parser.reset(&start);
                 let selectors = parser
                     .parse_until_before(Delimiter::CurlyBracketBlock, |p| {
-                        Ok::<_, cssparser::ParseError<'_, ()>>(selectors(p))
+                        Ok::<_, cssparser::ParseError<()>>(selectors(p))
                     })
                     .unwrap_or_default();
                 match parser.next() {
                     Ok(Token::CurlyBracketBlock) => {
                         let declarations = parser
                             .parse_nested_block(|p| {
-                                Ok::<_, cssparser::ParseError<'_, ()>>(declarations(p))
+                                Ok::<_, cssparser::ParseError<()>>(declarations(p))
                             })
                             .unwrap_or_default();
                         if !selectors.is_empty() {
@@ -179,20 +178,16 @@ fn rules_into(parser: &mut Parser<'_, '_>, rules: &mut Vec<Rule>) {
 }
 
 pub fn parse_declarations(text: &str) -> Vec<Declaration> {
-    let mut input = ParserInput::new(text);
-    let mut parser = Parser::new(&mut input);
+    let mut parser = Parser::new(text);
     declarations(&mut parser)
 }
 
-fn selectors(parser: &mut Parser<'_, '_>) -> Vec<Selector> {
+fn selectors(parser: &mut Parser<'_>) -> Vec<Selector> {
     let mut out = Vec::new();
     let mut current = Selector::default();
     let mut simple: Option<Simple> = None;
     let mut after_space = false;
-    loop {
-        let Ok(token) = parser.next_including_whitespace() else {
-            break;
-        };
+    while let Ok(token) = parser.next_including_whitespace() {
         match token {
             Token::WhiteSpace(_) => {
                 if simple.is_some() {
@@ -236,7 +231,7 @@ fn selectors(parser: &mut Parser<'_, '_>) -> Vec<Selector> {
                     current = Selector::default();
                     let _ = parser.parse_until_before(Delimiter::Comma, |p| {
                         while p.next().is_ok() {}
-                        Ok::<(), cssparser::ParseError<'_, ()>>(())
+                        Ok::<(), cssparser::ParseError<()>>(())
                     });
                     let _ = parser.next();
                 }
@@ -247,7 +242,7 @@ fn selectors(parser: &mut Parser<'_, '_>) -> Vec<Selector> {
                 current = Selector::default();
                 let _ = parser.parse_until_before(Delimiter::Comma, |p| {
                     while p.next().is_ok() {}
-                    Ok::<(), cssparser::ParseError<'_, ()>>(())
+                    Ok::<(), cssparser::ParseError<()>>(())
                 });
                 let _ = parser.next();
             }
@@ -262,19 +257,16 @@ fn selectors(parser: &mut Parser<'_, '_>) -> Vec<Selector> {
     out
 }
 
-fn declarations(parser: &mut Parser<'_, '_>) -> Vec<Declaration> {
+fn declarations(parser: &mut Parser<'_>) -> Vec<Declaration> {
     let mut out = Vec::new();
-    loop {
-        let Ok(token) = parser.next() else {
-            break;
-        };
+    while let Ok(token) = parser.next() {
         let name = match token {
             Token::Ident(name) => name.to_string().to_ascii_lowercase(),
             Token::Semicolon => continue,
             _ => {
                 let _ = parser.parse_until_before(Delimiter::Semicolon, |p| {
                     while p.next().is_ok() {}
-                    Ok::<(), cssparser::ParseError<'_, ()>>(())
+                    Ok::<(), cssparser::ParseError<()>>(())
                 });
                 let _ = parser.next();
                 continue;
@@ -283,14 +275,14 @@ fn declarations(parser: &mut Parser<'_, '_>) -> Vec<Declaration> {
         if parser.expect_colon().is_err() {
             let _ = parser.parse_until_before(Delimiter::Semicolon, |p| {
                 while p.next().is_ok() {}
-                Ok::<(), cssparser::ParseError<'_, ()>>(())
+                Ok::<(), cssparser::ParseError<()>>(())
             });
             let _ = parser.next();
             continue;
         }
         let (values, important) = parser
             .parse_until_before(Delimiter::Semicolon, |p| {
-                Ok::<_, cssparser::ParseError<'_, ()>>(values(p))
+                Ok::<_, cssparser::ParseError<()>>(values(p))
             })
             .unwrap_or_default();
         let _ = parser.next();
@@ -308,7 +300,7 @@ fn declarations(parser: &mut Parser<'_, '_>) -> Vec<Declaration> {
     out
 }
 
-fn values(parser: &mut Parser<'_, '_>) -> (Vec<Value>, bool) {
+fn values(parser: &mut Parser<'_>) -> (Vec<Value>, bool) {
     let mut out = Vec::new();
     let mut important = false;
     while let Ok(token) = parser.next() {
@@ -334,7 +326,7 @@ fn values(parser: &mut Parser<'_, '_>) -> (Vec<Value>, bool) {
             Token::Function(name) if name.eq_ignore_ascii_case("url") => {
                 let url = parser
                     .parse_nested_block(|p| {
-                        Ok::<_, cssparser::ParseError<'_, ()>>(
+                        Ok::<_, cssparser::ParseError<()>>(
                             p.expect_string().map(|s| s.to_string()).unwrap_or_default(),
                         )
                     })

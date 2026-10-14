@@ -7,7 +7,7 @@ license.workspace = true
 
 [dependencies]
 isdb.workspace = true
-cssparser = "0.35"
+cssparser = "0.38"
 encoding_rs = "0.8"
 boa_engine = { version = "0.22", default-features = false }
 boa_ast = "0.22"
