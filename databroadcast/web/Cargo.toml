@@ -23,7 +23,7 @@ url = "2"
 png = "0.18"
 gif = "0.14"
 zune-jpeg = "0.4"
-zune-core = "0.4"
+zune-core = "0.5"
 boa_engine = { version = "0.22", features = ["annex-b"] }
 miniz_oxide = "0.8"
 isdb = { workspace = true }

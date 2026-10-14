@@ -4104,7 +4104,7 @@ dependencies = [
  "peniko",
  "png",
  "url",
- "zune-core 0.4.12",
+ "zune-core 0.5.3",
  "zune-jpeg 0.4.21",
  "zwsdk",
 ]
