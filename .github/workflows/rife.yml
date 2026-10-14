@@ -168,7 +168,7 @@ jobs:
 
   zwcoreml:
     name: zwcoreml (macOS)
-    runs-on: macos-15
+    runs-on: macos-26
     env:
       ARCHIVE: zwcoreml-${{ inputs.version }}-macos
     steps:
