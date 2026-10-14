@@ -1818,7 +1818,7 @@ dependencies = [
  "num-traits",
  "png",
  "zune-core 0.5.3",
- "zune-jpeg 0.5.15",
+ "zune-jpeg",
 ]
 
 [[package]]
@@ -4105,7 +4105,7 @@ dependencies = [
  "png",
  "url",
  "zune-core 0.4.12",
- "zune-jpeg 0.4.21",
+ "zune-jpeg",
  "zwsdk",
 ]
 
@@ -4484,15 +4484,6 @@ name = "zune-core"
 version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d56377fd46368984a170bc5aac5567e52ca5da874caa60bea39fcbca78fb658b"
-
-[[package]]
-name = "zune-jpeg"
-version = "0.4.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "29ce2c8a9384ad323cf564b67da86e21d3cfdff87908bc1223ed5c99bc792713"
-dependencies = [
- "zune-core 0.4.12",
-]
 
 [[package]]
 name = "zune-jpeg"
