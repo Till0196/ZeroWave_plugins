@@ -10,11 +10,11 @@ license.workspace = true
 workspace = true
 
 [dependencies]
-blitz-dom = { git = "https://github.com/Till0196/blitz", rev = "ec66a911226e9242f63236c7580167fa741a6875", default-features = false, features = ["svg", "autofocus", "custom-widget", "floats", "woff"] }
-blitz-html = { git = "https://github.com/Till0196/blitz", rev = "ec66a911226e9242f63236c7580167fa741a6875", default-features = false }
-blitz-paint = { git = "https://github.com/Till0196/blitz", rev = "ec66a911226e9242f63236c7580167fa741a6875", default-features = false, features = ["svg", "custom-widget"] }
-blitz-traits = { git = "https://github.com/Till0196/blitz", rev = "ec66a911226e9242f63236c7580167fa741a6875", default-features = false }
-blitz-vibey-script = { git = "https://github.com/Till0196/blitz", rev = "ec66a911226e9242f63236c7580167fa741a6875", default-features = false }
+blitz-dom = { git = "https://github.com/Till0196/blitz", rev = "cd6515f4c620880444e0fc9fa845a72f4f06bccc", default-features = false, features = ["svg", "autofocus", "custom-widget", "floats", "woff"] }
+blitz-html = { git = "https://github.com/Till0196/blitz", rev = "cd6515f4c620880444e0fc9fa845a72f4f06bccc", default-features = false }
+blitz-paint = { git = "https://github.com/Till0196/blitz", rev = "cd6515f4c620880444e0fc9fa845a72f4f06bccc", default-features = false, features = ["svg", "custom-widget"] }
+blitz-traits = { git = "https://github.com/Till0196/blitz", rev = "cd6515f4c620880444e0fc9fa845a72f4f06bccc", default-features = false }
+blitz-vibey-script = { git = "https://github.com/Till0196/blitz", rev = "cd6515f4c620880444e0fc9fa845a72f4f06bccc", default-features = false }
 anyrender = "0.14"
 anyrender_vello_cpu = "0.18"
 peniko = "0.6"
