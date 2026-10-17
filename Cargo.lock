@@ -191,7 +191,7 @@ dependencies = [
 [[package]]
 name = "blitz-dom"
 version = "0.3.0-beta.3"
-source = "git+https://github.com/Till0196/blitz?rev=cd6515f4c620880444e0fc9fa845a72f4f06bccc#cd6515f4c620880444e0fc9fa845a72f4f06bccc"
+source = "git+https://github.com/Till0196/blitz?rev=7646a04c8a3f75f25fef1543240949aa98873ee9#7646a04c8a3f75f25fef1543240949aa98873ee9"
 dependencies = [
  "accesskit",
  "anyrender",
@@ -202,7 +202,7 @@ dependencies = [
  "color",
  "cssparser",
  "cursor-icon",
- "debug_timer 0.1.3 (git+https://github.com/Till0196/blitz?rev=cd6515f4c620880444e0fc9fa845a72f4f06bccc)",
+ "debug_timer 0.1.3 (git+https://github.com/Till0196/blitz?rev=7646a04c8a3f75f25fef1543240949aa98873ee9)",
  "euclid",
  "html-escape",
  "icu_locale_core",
@@ -239,7 +239,7 @@ dependencies = [
 [[package]]
 name = "blitz-html"
 version = "0.3.0-beta.3"
-source = "git+https://github.com/Till0196/blitz?rev=cd6515f4c620880444e0fc9fa845a72f4f06bccc#cd6515f4c620880444e0fc9fa845a72f4f06bccc"
+source = "git+https://github.com/Till0196/blitz?rev=7646a04c8a3f75f25fef1543240949aa98873ee9#7646a04c8a3f75f25fef1543240949aa98873ee9"
 dependencies = [
  "blitz-dom",
  "blitz-traits",
@@ -250,7 +250,7 @@ dependencies = [
 [[package]]
 name = "blitz-paint"
 version = "0.3.0-beta.3"
-source = "git+https://github.com/Till0196/blitz?rev=cd6515f4c620880444e0fc9fa845a72f4f06bccc#cd6515f4c620880444e0fc9fa845a72f4f06bccc"
+source = "git+https://github.com/Till0196/blitz?rev=7646a04c8a3f75f25fef1543240949aa98873ee9#7646a04c8a3f75f25fef1543240949aa98873ee9"
 dependencies = [
  "anyrender",
  "anyrender_svg",
@@ -272,7 +272,7 @@ dependencies = [
 [[package]]
 name = "blitz-traits"
 version = "0.3.0-beta.3"
-source = "git+https://github.com/Till0196/blitz?rev=cd6515f4c620880444e0fc9fa845a72f4f06bccc#cd6515f4c620880444e0fc9fa845a72f4f06bccc"
+source = "git+https://github.com/Till0196/blitz?rev=7646a04c8a3f75f25fef1543240949aa98873ee9#7646a04c8a3f75f25fef1543240949aa98873ee9"
 dependencies = [
  "atomic_refcell",
  "bitflags",
@@ -288,7 +288,7 @@ dependencies = [
 [[package]]
 name = "blitz-vibey-script"
 version = "0.3.0-beta.3"
-source = "git+https://github.com/Till0196/blitz?rev=cd6515f4c620880444e0fc9fa845a72f4f06bccc#cd6515f4c620880444e0fc9fa845a72f4f06bccc"
+source = "git+https://github.com/Till0196/blitz?rev=7646a04c8a3f75f25fef1543240949aa98873ee9#7646a04c8a3f75f25fef1543240949aa98873ee9"
 dependencies = [
  "blitz-dom",
  "blitz-html",
@@ -1013,7 +1013,7 @@ checksum = "da220af51a1a335e9a930beaaef53d261e41ea9eecfb3d973a3ddae1a7284b9c"
 [[package]]
 name = "debug_timer"
 version = "0.1.3"
-source = "git+https://github.com/Till0196/blitz?rev=cd6515f4c620880444e0fc9fa845a72f4f06bccc#cd6515f4c620880444e0fc9fa845a72f4f06bccc"
+source = "git+https://github.com/Till0196/blitz?rev=7646a04c8a3f75f25fef1543240949aa98873ee9#7646a04c8a3f75f25fef1543240949aa98873ee9"
 
 [[package]]
 name = "deranged"
@@ -2000,7 +2000,7 @@ dependencies = [
 [[package]]
 name = "mediadecoder"
 version = "0.1.0"
-source = "git+https://github.com/Till0196/ZeroWave#38cd667403cf6c940a404900c4e0f52fbf62f847"
+source = "git+https://github.com/Till0196/ZeroWave#fc6c3fa9715b7b14b080c0916b035f52a076c4fa"
 dependencies = [
  "tracing",
 ]
@@ -3214,7 +3214,7 @@ dependencies = [
 [[package]]
 name = "stylo_taffy"
 version = "0.3.0-beta.3"
-source = "git+https://github.com/Till0196/blitz?rev=cd6515f4c620880444e0fc9fa845a72f4f06bccc#cd6515f4c620880444e0fc9fa845a72f4f06bccc"
+source = "git+https://github.com/Till0196/blitz?rev=7646a04c8a3f75f25fef1543240949aa98873ee9#7646a04c8a3f75f25fef1543240949aa98873ee9"
 dependencies = [
  "bitflags",
  "stylo",
@@ -4348,7 +4348,7 @@ dependencies = [
 [[package]]
 name = "zerowave-core"
 version = "0.1.0"
-source = "git+https://github.com/Till0196/ZeroWave#38cd667403cf6c940a404900c4e0f52fbf62f847"
+source = "git+https://github.com/Till0196/ZeroWave#fc6c3fa9715b7b14b080c0916b035f52a076c4fa"
 dependencies = [
  "isdb",
  "mediadecoder",
@@ -4434,7 +4434,7 @@ dependencies = [
 [[package]]
 name = "zwsdk"
 version = "0.1.0"
-source = "git+https://github.com/Till0196/ZeroWave#38cd667403cf6c940a404900c4e0f52fbf62f847"
+source = "git+https://github.com/Till0196/ZeroWave#fc6c3fa9715b7b14b080c0916b035f52a076c4fa"
 dependencies = [
  "bytemuck",
  "coax",
