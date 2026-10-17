@@ -41,7 +41,8 @@ pub struct App {
     pub size: (u32, u32),
     loaded_images: std::collections::BTreeMap<blitz_dom::NodeId, String>,
     pub scale: f64,
-    faces: crate::fonts::Faces,
+    /// 移った先の文書にも同じフォントを渡す（フォントのバイト列は写さない）。
+    fonts: parley::FontContext,
     keyed: bool,
     began_ms: f64,
 }
@@ -212,7 +213,7 @@ impl App {
                     self.scale as f32,
                     ColorScheme::Light,
                 )),
-                font_ctx: Some(crate::fonts::context(&self.faces)),
+                font_ctx: Some(self.fonts.clone()),
                 ua_stylesheets: vec![
                     blitz_dom::UserAgentStylesheet::default_sheet(),
                     receiver_stylesheet(),
@@ -253,6 +254,7 @@ impl App {
             host,
             ..Default::default()
         }));
+        let fonts = crate::fonts::context(faces);
         let mut document = ScriptDocument::from_html_with_host_hooks(
             &html,
             DocumentConfig {
@@ -264,7 +266,7 @@ impl App {
                     scale as f32,
                     ColorScheme::Light,
                 )),
-                font_ctx: Some(crate::fonts::context(faces)),
+                font_ctx: Some(fonts.clone()),
                 ua_stylesheets: vec![
                     blitz_dom::UserAgentStylesheet::default_sheet(),
                     receiver_stylesheet(),
@@ -287,7 +289,7 @@ impl App {
             store,
             size,
             scale,
-            faces: faces.clone(),
+            fonts,
             began_ms: zwsdk::plug::host::monotonic_ms(),
             keyed: false,
             loaded_images: std::collections::BTreeMap::new(),

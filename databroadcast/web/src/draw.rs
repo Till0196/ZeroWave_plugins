@@ -687,8 +687,11 @@ pub fn font_context(faces: &zwsdk::fonts::Faces) -> FontContext {
         system_fonts: false,
     });
     let mut families = Vec::new();
-    let register = |collection: &mut Collection, face: &Vec<u8>, alias: Option<&str>| {
-        let blob = Blob::new(Arc::new(face.clone()) as Arc<dyn AsRef<[u8]> + Send + Sync>);
+    // 別名でも同じバイト列を登録する（フォントは十数 MiB あるので写さない）。
+    let blob_of =
+        |face: &Vec<u8>| Blob::new(Arc::new(face.clone()) as Arc<dyn AsRef<[u8]> + Send + Sync>);
+    let register = |collection: &mut Collection, blob: &Blob<u8>, alias: Option<&str>| {
+        let blob = blob.clone();
         let over = alias.map(|name| FontInfoOverride {
             family_name: Some(name),
             ..Default::default()
@@ -702,15 +705,17 @@ pub fn font_context(faces: &zwsdk::fonts::Faces) -> FontContext {
         found.into_iter().map(|(_, id)| id).collect::<Vec<_>>()
     };
     if let Some(sans) = &faces.sans {
-        families.extend(register(&mut collection, sans, None));
+        let sans = blob_of(sans);
+        families.extend(register(&mut collection, &sans, None));
         // データ放送の CSS は `font-family:"丸ゴシック"` と書く。
         for alias in ["丸ゴシック", "角ゴシック", "太丸ゴシック"] {
-            let _ = register(&mut collection, sans, Some(alias));
+            let _ = register(&mut collection, &sans, Some(alias));
         }
     }
     if let Some(mono) = &faces.mono {
-        let named = register(&mut collection, mono, None);
-        let _ = register(&mut collection, mono, Some(zwsdk::fonts::MONO_ALIAS));
+        let mono = blob_of(mono);
+        let named = register(&mut collection, &mono, None);
+        let _ = register(&mut collection, &mono, Some(zwsdk::fonts::MONO_ALIAS));
         families.extend(named);
     }
     for generic in [
