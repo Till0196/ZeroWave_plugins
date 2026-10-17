@@ -83,10 +83,10 @@ pub fn load() -> Bml {
 }
 
 /// 設定で選んだ等幅のフォント（BML の文字が丸・角に無いとき）。空なら本体が渡す物のまま。
-pub fn mono() -> Option<Vec<u8>> {
+pub fn mono() -> Option<std::sync::Arc<Vec<u8>>> {
     Reader::default()
         .chosen(MONO, false)
-        .map(|found| found.face.bytes.as_ref().clone())
+        .map(|found| found.face.bytes)
 }
 
 impl Found {

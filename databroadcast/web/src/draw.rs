@@ -689,7 +689,7 @@ pub fn font_context(faces: &zwsdk::fonts::Faces) -> FontContext {
     let mut families = Vec::new();
     // 別名でも同じバイト列を登録する（フォントは十数 MiB あるので写さない）。
     let blob_of =
-        |face: &Vec<u8>| Blob::new(Arc::new(face.clone()) as Arc<dyn AsRef<[u8]> + Send + Sync>);
+        |face: &Arc<Vec<u8>>| Blob::new(Arc::clone(face) as Arc<dyn AsRef<[u8]> + Send + Sync>);
     let register = |collection: &mut Collection, blob: &Blob<u8>, alias: Option<&str>| {
         let blob = blob.clone();
         let over = alias.map(|name| FontInfoOverride {
