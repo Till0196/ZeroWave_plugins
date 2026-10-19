@@ -165,6 +165,16 @@ fn the_plugin_works_end_to_end() {
         assert_eq!(said[1].seconds, Some(0.0));
     }
     notices.lock().unwrap().clear();
+    // ビルドの途中で作り直すと、本体は済んだことを知らせないので、準備中の通知を取り下げる。
+    picture.event(&zwsdk::video::Event::Building { total: 2 });
+    picture.build(&env(At::Picture)).expect("作れる");
+    {
+        let said = notices.lock().unwrap();
+        assert_eq!(said.len(), 2);
+        assert_eq!(said[1].title, said[0].title);
+        assert_eq!(said[1].seconds, Some(0.0));
+    }
+    notices.lock().unwrap().clear();
     let mut deinterlace = plugin
         .video(Box::new(|_, _| {}), io(&plugin, &live, &notices))
         .expect("インスタンス");

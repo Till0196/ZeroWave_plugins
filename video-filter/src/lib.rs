@@ -165,6 +165,10 @@ impl zwsdk::plug::Video for Shaders {
     }
 
     fn build(&mut self, env: &Env) -> Result<Graph, String> {
+        // 本体はビルドの途中で作り直すと前のビルドを捨て、済んだことを知らせない。
+        if let Some(shown) = self.compiling.take() {
+            zwsdk::plug::host::notice(&notices::withdrawn(shown));
+        }
         let filter = Filter::load(&env.settings);
         let chosen = chosen(&filter, env);
         self.tell(env, &filter, &chosen);
