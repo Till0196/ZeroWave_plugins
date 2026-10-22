@@ -57,7 +57,8 @@ function frame(): void {
       is_my_post: false,
     });
   }
-  renderer.drawCanvas(vposOf(elapsed));
+  // 描くときは端数のまま渡す（1/100 秒に切り捨てると、60 fps では一フレームに進む量が揃わずにカクつく）。
+  renderer.drawCanvas(elapsed / 10);
   requestAnimationFrame(frame);
 }
 
