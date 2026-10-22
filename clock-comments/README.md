@@ -56,7 +56,7 @@ send({ Log: "起動しました" });
 ```json
 { "name": "zerowave-clock-comments", "version": "0.2.0",
   "zerowave": { "hooks": ["layer"],
-                "layer": { "above": "captions", "wants": ["clock", "area"], "fps": 60 } } }
+                "layer": { "above": "captions", "wants": ["clock", "area"], "fps": 30 } } }
 ```
 
 ブラウザーの API は、次のものが使えます。
