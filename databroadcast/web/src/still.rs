@@ -139,7 +139,7 @@ impl Still {
             (f64::from(size.1) * scale).floor() as u32,
         );
         let began = std::time::Instant::now();
-        let shrunk = shrink(&rgba, (width, height), to);
+        let shrunk = zwsdk::plug::host::shrink(&rgba, (width, height), to);
         took.shrink = ms(began);
         (shrunk, to.0, to.1, video, took)
     }
@@ -182,65 +182,10 @@ fn grid_scale(scale: f64) -> f64 {
     }
 }
 
-/// RGBA（掛けていない α）を面積平均で縮める。α を重みに混ぜる。
-pub fn shrink(rgba: &[u8], from: (u32, u32), to: (u32, u32)) -> Vec<u8> {
-    let (fw, fh) = (from.0 as usize, from.1 as usize);
-    let (tw, th) = (to.0 as usize, to.1 as usize);
-    let mut out = vec![0u8; tw * th * 4];
-    if fw == 0 || fh == 0 || tw == 0 || th == 0 {
-        return out;
-    }
-    let sx = fw as f64 / tw as f64;
-    let sy = fh as f64 / th as f64;
-    let spans = |n: usize, step: f64, limit: usize| -> Vec<Vec<(usize, f64)>> {
-        (0..n)
-            .map(|i| {
-                let (a, b) = (i as f64 * step, (i as f64 + 1.0) * step);
-                let mut taps = Vec::new();
-                let mut k = a.floor() as usize;
-                while (k as f64) < b && k < limit {
-                    let w = (b.min(k as f64 + 1.0) - a.max(k as f64)).max(0.0);
-                    if w > 0.0 {
-                        taps.push((k, w));
-                    }
-                    k += 1;
-                }
-                taps
-            })
-            .collect()
-    };
-    let xs = spans(tw, sx, fw);
-    let ys = spans(th, sy, fh);
-    for (y, ytaps) in ys.iter().enumerate() {
-        for (x, xtaps) in xs.iter().enumerate() {
-            let (mut r, mut g, mut b, mut a, mut area) = (0.0, 0.0, 0.0, 0.0, 0.0);
-            for &(sy, wy) in ytaps {
-                for &(sx, wx) in xtaps {
-                    let w = wx * wy;
-                    let at = (sy * fw + sx) * 4;
-                    let alpha = f64::from(rgba[at + 3]) * w;
-                    r += f64::from(rgba[at]) * alpha;
-                    g += f64::from(rgba[at + 1]) * alpha;
-                    b += f64::from(rgba[at + 2]) * alpha;
-                    a += alpha;
-                    area += w;
-                }
-            }
-            let at = (y * tw + x) * 4;
-            if a > 0.0 {
-                out[at] = (r / a).round() as u8;
-                out[at + 1] = (g / a).round() as u8;
-                out[at + 2] = (b / a).round() as u8;
-            }
-            out[at + 3] = (a / area).round().min(255.0) as u8;
-        }
-    }
-    out
-}
-
 #[cfg(test)]
 mod grid_tests {
-    use super::{grid_scale, most_scale, shrink};
+    use super::{grid_scale, most_scale};
+    use zwsdk::plug::host::shrink;
 
     #[test]
     fn whole_scales_stop_at_full_hd() {
