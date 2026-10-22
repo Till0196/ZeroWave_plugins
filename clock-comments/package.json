@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build:js": "esbuild src/index.ts --bundle --format=esm --target=es2020 --outfile=dist/index.js",
-    "build": "npm run build:js && ../../zerowave/sdk/fetch-javy.sh && ../../zerowave/sdk/bin/javy build -C plugin=../../zerowave/sdk/javy/zwjavy.wasm dist/index.js -o dist/clock-comments.wasm && node ../../zerowave/sdk/ts/bin/zw-stamp.mjs dist/clock-comments.wasm",
+    "build": "npm run build:js && ../../zerowave/sdk/javy/build.sh && ../../zerowave/sdk/bin/javy build -C plugin=../../zerowave/sdk/javy/zwjavy.wasm dist/index.js -o dist/clock-comments.wasm && node ../../zerowave/sdk/ts/bin/zw-stamp.mjs dist/clock-comments.wasm",
     "check": "tsc --noEmit",
     "install:local": "npm run build && mkdir -p ${ZW_PLUGINS:?ZW_PLUGINS にプラグインのフォルダーを} && cp dist/clock-comments.wasm $ZW_PLUGINS/"
   },

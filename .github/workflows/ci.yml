@@ -63,6 +63,7 @@ jobs:
       - name: Check and build clock-comments
         working-directory: zerowave_plugins/clock-comments
         run: |
+          rustup target add wasm32-wasip1
           npm ci
           npm run check
           npm run build

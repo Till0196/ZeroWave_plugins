@@ -74,6 +74,7 @@ jobs:
         if: env.PLUGIN == 'clock-comments'
         working-directory: zerowave_plugins/clock-comments
         run: |
+          rustup target add wasm32-wasip1
           npm ci
           npm run build
           cp dist/clock-comments.wasm "$RUNNER_TEMP/$FILE"
