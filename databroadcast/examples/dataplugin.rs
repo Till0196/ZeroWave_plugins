@@ -58,6 +58,9 @@ fn message_of(out: Out) -> Option<(zwsdk::layer::Message, Vec<u8>)> {
     })
 }
 
+/// 最後に描いた画面と、アルファで割った RGBA。
+type Shown = Option<(zwsdk::layer::Frame, Vec<u8>)>;
+
 enum Driver {
     Wasm(Box<zwsdk::host::LayerInstance>),
     Native(Box<zerowave_databroadcast::Engine>),
@@ -81,9 +84,14 @@ impl Driver {
         }
     }
 
-    fn frame(&mut self, area: (u32, u32)) -> Result<Option<zwsdk::host::Painted>, String> {
+    fn frame(&mut self, area: (u32, u32)) -> Result<Option<Shown>, String> {
         match self {
-            Self::Wasm(data) => data.frame(area),
+            Self::Wasm(data) => Ok(data.frame(area, false)?.map(|painted| {
+                painted.and_then(|(frame, picture)| match picture {
+                    zwsdk::host::Picture::Rgba(rgba) => Some((frame, rgba)),
+                    zwsdk::host::Picture::Sprites(_) => None,
+                })
+            })),
             Self::Native(engine) => Ok(engine.take_frame()),
         }
     }
@@ -99,7 +107,7 @@ impl Driver {
 /// MMT のアプリは開いてから六秒後に d（準備中の d は無視される）。
 fn press_after_open(
     data: &mut Driver,
-    last: &Option<(zwsdk::layer::Frame, Vec<u8>)>,
+    last: &Shown,
     pressed: &mut bool,
     opened_at: &mut Option<std::time::Instant>,
 ) {
@@ -171,7 +179,7 @@ impl Keys {
     fn press(
         &mut self,
         data: &mut Driver,
-        last: &Option<(zwsdk::layer::Frame, Vec<u8>)>,
+        last: &Shown,
         opened_at: Option<std::time::Instant>,
         pressed_at: &std::cell::Cell<Option<std::time::Instant>>,
     ) {
@@ -349,7 +357,7 @@ fn main() {
     }
     let mut buffer = vec![0u8; 188 * 512];
     let mut pressed = false;
-    let mut last: Option<(zwsdk::layer::Frame, Vec<u8>)> = None;
+    let mut last: Shown = None;
     let mut elapsed_ms = 0.0;
     let mut told_broadcast = false;
     let mut opened_at: Option<std::time::Instant> = None;
@@ -376,7 +384,7 @@ fn main() {
         on: std::env::var_os("ZW_TIMES").is_some(),
         ..Default::default()
     };
-    let mut pump = |data: &mut Driver, last: &mut Option<(zwsdk::layer::Frame, Vec<u8>)>| {
+    let mut pump = |data: &mut Driver, last: &mut Shown| {
         let began = std::time::Instant::now();
         let unix = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
