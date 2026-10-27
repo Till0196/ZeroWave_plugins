@@ -34,7 +34,7 @@ impl zwsdk::plug::Layer for Engine {
 zwsdk::export_layer!(
     Engine,
     name = "データ放送",
-    version = "0.1.1",
+    version = "0.1.2",
     layer = r#"{"at":"databroadcast","wants":["streams","captions","keys","clock","area","broadcast","popup"]}"#,
     // 設定はこのプラグインが持つ（`plugins/databroadcast.toml`）。
     config = r#"[
