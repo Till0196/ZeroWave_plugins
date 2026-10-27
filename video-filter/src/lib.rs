@@ -279,7 +279,7 @@ impl zwsdk::plug::Video for Shaders {
 zwsdk::export_video!(
     Shaders,
     name = "映像フィルター",
-    version = "0.1.0",
+    version = "0.1.1",
     video = r#"{"at":["deinterlace","picture"],"program":true}"#,
     ui = ui::Menu,
     ui_manifest = r#"{"title":"映像フィルター","settings":"main","panels":[{"id":"filter","title":"映像フィルター"}]}"#,
