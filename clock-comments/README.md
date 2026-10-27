@@ -54,7 +54,7 @@ send({ Log: "起動しました" });
 ビルドすると wasm の中に書き込まれるので、別のファイルは要りません。
 
 ```json
-{ "name": "zerowave-clock-comments", "version": "0.2.0",
+{ "name": "zerowave-clock-comments", "version": "0.1.1",
   "zerowave": { "hooks": ["layer"],
                 "layer": { "above": "captions", "wants": ["clock", "area"], "fps": 30 } } }
 ```
