@@ -8,13 +8,13 @@ TypeScript で書いたプラグインの例でもあります。
 
 ZeroWave のリポジトリを、このリポジトリと同じフォルダーに `zerowave` という名前で置いておきます。Node.js 18 以降が必要です。
 
-プラグインが対象とする ZeroWave のリリースタグを指定して、JavaScript 実行環境を取得します。実行環境は SDK に一度置けば、以後のビルドで使えます。
+対応するSDKのリリースタグを指定して、JavaScript 実行環境を取得します。実行環境は SDK に一度置けば、以後のビルドで使えます。
 
 ```sh
-node ../../zerowave/sdk/ts/bin/fetch-runtime.mjs <ZeroWave のリリースタグ>
+node ../../zerowave/sdk/ts/bin/fetch-runtime.mjs sdk-v0.1.0
 ```
 
-実行環境を含むリリースがまだない場合は、ZeroWave のソースから `sh ../../zerowave/sdk/javy/build.sh` で生成できます（Rust と `wasm32-wasip1` ターゲットが必要です）。
+実行環境は、ZeroWave のソースから `sh ../../zerowave/sdk/javy/build.sh` で生成できます（Rust と `wasm32-wasip1` ターゲットが必要です）。
 
 ```sh
 npm install
