@@ -47,12 +47,15 @@ jobs:
             echo "version=$version"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Link ZeroWave from cargo
+      # clock-comments は zw_script 対応の SDK を使う。実行環境を含むリリース後にタグへ更新する。
+      - name: Check out the ZeroWave SDK
         if: env.PLUGIN == 'clock-comments'
-        working-directory: zerowave_plugins
-        run: |
-          sdk="$(cargo metadata --format-version 1 | jq -r '.packages[] | select(.name == "zwsdk") | .manifest_path')"
-          ln -s "$(dirname "$(dirname "$sdk")")" ../zerowave
+        uses: actions/checkout@v7
+        with:
+          repository: Till0196/ZeroWave
+          ref: e02b96e3e7ae9ebec9300c69bcaedfad95db6217
+          path: zerowave
+          persist-credentials: false
 
       - name: Build a wasm32-unknown-unknown plugin
         if: env.PLUGIN == 'tsmf' || env.PLUGIN == 'pipe' || env.PLUGIN == 'video-filter'
@@ -75,6 +78,7 @@ jobs:
         working-directory: zerowave_plugins/clock-comments
         run: |
           rustup target add wasm32-wasip1
+          sh ../../zerowave/sdk/javy/build.sh
           npm ci
           npm run build
           cp dist/clock-comments.wasm "$RUNNER_TEMP/$FILE"
