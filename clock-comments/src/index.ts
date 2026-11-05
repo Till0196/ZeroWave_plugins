@@ -1,6 +1,6 @@
 // ZeroWave の層: いまの時刻を五秒おきに、ニコニコ風に右から左へ流す。
 //
-// TypeScript で書き、esbuild で一つにまとめ、javy で wasm にする。レンダリングするのは
+// TypeScript で書き、esbuild で一つにまとめ、zw-stamp で wasm にする。レンダリングするのは
 // zwsdk の canvas 2D。時刻は Date（本体の時計、日本標準時）。
 
 import NiconiComments, { type FormattedComment } from "@xpadev-net/niconicomments";

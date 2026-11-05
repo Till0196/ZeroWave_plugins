@@ -54,16 +54,19 @@ jobs:
           path: zerowave_plugins
           persist-credentials: false
 
-      - name: Link ZeroWave from cargo
-        working-directory: zerowave_plugins
-        run: |
-          sdk="$(cargo metadata --format-version 1 | jq -r '.packages[] | select(.name == "zwsdk") | .manifest_path')"
-          ln -s "$(dirname "$(dirname "$sdk")")" ../zerowave
+      # SDK と実行環境は同じリリースに揃える。
+      - name: Check out the ZeroWave SDK
+        uses: actions/checkout@v7
+        with:
+          repository: Till0196/ZeroWave
+          ref: sdk-v0.1.0
+          path: zerowave
+          persist-credentials: false
 
       - name: Check and build clock-comments
         working-directory: zerowave_plugins/clock-comments
         run: |
-          rustup target add wasm32-wasip1
+          node ../../zerowave/sdk/ts/bin/fetch-runtime.mjs sdk-v0.1.0
           npm ci
           npm run check
           npm run build

@@ -6,7 +6,15 @@ TypeScript で書いたプラグインの例でもあります。
 
 ## ビルド
 
-ZeroWave のリポジトリを、このリポジトリと同じフォルダーに `zerowave` という名前で置いておきます。
+ZeroWave のリポジトリを、このリポジトリと同じフォルダーに `zerowave` という名前で置いておきます。Node.js 18 以降が必要です。
+
+ZeroWave のソースは `sdk-v0.1.0` タグの SDK を使います。同じSDKのリリースタグを指定して、JavaScript 実行環境を取得します。実行環境は SDK に一度置けば、以後のビルドで使えます。
+
+```sh
+node ../../zerowave/sdk/ts/bin/fetch-runtime.mjs sdk-v0.1.0
+```
+
+実行環境は、ZeroWave のソースから `sh ../../zerowave/sdk/javy/build.sh` で生成できます（Rust と `wasm32-wasip1` ターゲットが必要です）。
 
 ```sh
 npm install
@@ -20,8 +28,7 @@ ZeroWave の `plugins` フォルダーにコピーするか、次のコマンド
 ZW_PLUGINS=<plugins フォルダー> npm run install:local
 ```
 
-`npm run build` は、esbuild で一つの JavaScript にまとめ、Javy で wasm に変換し、マニフェストを wasm に書き込みます。
-Javy は初回のビルドのときに自動でダウンロードされます。
+`npm run build` は、esbuild で一つの JavaScript にまとめ、`zw-stamp` で実行環境にスクリプトとマニフェストを書き込みます。
 
 ## TypeScript でプラグインを書く
 
@@ -54,7 +61,7 @@ send({ Log: "起動しました" });
 ビルドすると wasm の中に書き込まれるので、別のファイルは要りません。
 
 ```json
-{ "name": "zerowave-clock-comments", "version": "0.1.1",
+{ "name": "zerowave-clock-comments", "version": "0.1.2",
   "zerowave": { "hooks": ["layer"],
                 "layer": { "above": "captions", "wants": ["clock", "area"], "fps": 30 } } }
 ```
@@ -71,8 +78,4 @@ send({ Log: "起動しました" });
 JavaScript は、QuickJS を wasm にした [Javy](https://github.com/bytecodealliance/javy) の上で動きます。
 描画は ZeroWave 側で行うので、プラグインは描画の命令を送るだけです。
 
-作ったプラグインは、ZeroWave のリポジトリで次のように試せます。
-
-```sh
-cargo run -p zwsdk --features host --example layer -- <プラグインのフォルダー> 40 out.png
-```
+作ったプラグインは、ZeroWave の `plugins` フォルダーに置いて読み込めます。
