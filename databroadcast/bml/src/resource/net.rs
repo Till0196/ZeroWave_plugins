@@ -8,9 +8,51 @@ pub use zwsdk::net::{Failure, Reply, TIMEOUT, Url, escape, join, parse_url};
 use crate::Agent;
 
 #[cfg(not(target_arch = "wasm32"))]
-use zwsdk::net::send as send_raw;
+mod native {
+    use super::{Failure, Reply};
+    use std::sync::Mutex;
+    use std::time::Duration;
+
+    static SESSION: Mutex<Option<Box<dyn zwsdk::net::Session>>> = Mutex::new(None);
+
+    fn with_session<T>(f: impl FnOnce(&dyn zwsdk::net::Session) -> T) -> Option<T> {
+        let mut session = SESSION.lock().unwrap_or_else(|e| e.into_inner());
+        if session.is_none() {
+            *session = Some(zwsdk::net::network()?.session());
+        }
+        Some(f(session.as_deref()?))
+    }
+
+    pub fn has_ip() -> bool {
+        zwsdk::net::network().is_some_and(|network| network.has_ip())
+    }
+    pub fn resolve(host: &str) -> Option<String> {
+        zwsdk::net::network()?.resolve(host)
+    }
+    pub fn reach(host: &str, port: u16, timeout: Duration) -> Option<(String, u32)> {
+        zwsdk::net::network()?.reach(host, port, timeout, false)
+    }
+    pub fn send_raw(
+        method: &str,
+        uri: &str,
+        headers: &[(String, String)],
+        body: Option<&[u8]>,
+    ) -> Result<Reply, Failure> {
+        with_session(|session| session.send(method, uri, headers, body, false))
+            .unwrap_or(Err(Failure::Connect))
+    }
+    pub fn add_root_certificate(der: &[u8]) -> bool {
+        with_session(|session| session.add_root_certificate(der)).unwrap_or(false)
+    }
+    pub fn hold() {
+        *SESSION.lock().unwrap_or_else(|e| e.into_inner()) = None;
+    }
+    pub fn release() {}
+}
 #[cfg(not(target_arch = "wasm32"))]
-pub use zwsdk::net::{add_root_certificate, has_ip, hold, reach, release, resolve};
+use native::send_raw;
+#[cfg(not(target_arch = "wasm32"))]
+pub use native::{add_root_certificate, has_ip, hold, reach, release, resolve};
 
 #[cfg(target_arch = "wasm32")]
 use guest::send_raw;

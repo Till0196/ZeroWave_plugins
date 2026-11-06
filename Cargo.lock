@@ -2001,7 +2001,7 @@ dependencies = [
 [[package]]
 name = "mediadecoder"
 version = "0.1.0"
-source = "git+https://github.com/Till0196/ZeroWave#0d19891942f56494d29f9ed1a076c818d9ac73dc"
+source = "git+https://github.com/Till0196/ZeroWave#84339129efaf3bd752bb43329cd6270227618e11"
 dependencies = [
  "tracing",
 ]
@@ -4457,7 +4457,7 @@ dependencies = [
 [[package]]
 name = "zerowave-core"
 version = "0.1.0"
-source = "git+https://github.com/Till0196/ZeroWave#0d19891942f56494d29f9ed1a076c818d9ac73dc"
+source = "git+https://github.com/Till0196/ZeroWave#84339129efaf3bd752bb43329cd6270227618e11"
 dependencies = [
  "isdb",
  "mediadecoder",
@@ -4543,7 +4543,7 @@ dependencies = [
 [[package]]
 name = "zwsdk"
 version = "0.1.0"
-source = "git+https://github.com/Till0196/ZeroWave#0d19891942f56494d29f9ed1a076c818d9ac73dc"
+source = "git+https://github.com/Till0196/ZeroWave#84339129efaf3bd752bb43329cd6270227618e11"
 dependencies = [
  "bytemuck",
  "coax",
