@@ -472,6 +472,7 @@ mod tests {
     fn without_a_program_the_stream_passes_through() {
         let mut pipe = Pipe::new();
         pipe.start(StreamInfo {
+            relative_stream: None,
             container: Container::Ts,
             service: None,
         })

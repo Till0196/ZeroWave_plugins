@@ -47,8 +47,8 @@ impl Stream for Tsmf {
         self.said_multiplexed = false;
         self.said_lapsed = false;
         self.said_collision = false;
-        // チャンネルスキャンの予約値のときはチューナーを確保しない。
-        let probing = info.service.and_then(zwsdk::abi::part_of).is_some();
+        // 相対ストリームの明示指定ではチューナーを確保しない。
+        let probing = info.relative_stream.is_some();
         if separate()
             && !probing
             && let Some(words) = zwsdk::plug::host::tuner::words()
@@ -81,18 +81,11 @@ impl Stream for Tsmf {
             self.multiplex = Multiplex::over(take, 1 + self.borrowed.len());
             return Ok(());
         }
-        let take = match (info.container, info.service) {
-            // 止めるのは、多重化フレームを読めない放送に当たったときの回避策。
+        let take = match (info.container, info.relative_stream, info.service) {
             _ if !separate() => Take::Whole,
-            // チャンネルスキャンが相対ストリームを一つずつ読むための予約値（`zwsdk::abi::PART`）。
-            (Container::Ts, Some(service)) => match zwsdk::abi::part_of(service) {
-                Some(relative) => Take::Relative(relative, Carriage::Transport),
-                None => Take::Service(service),
-            },
-            (Container::Tlv, Some(service)) => match zwsdk::abi::part_of(service) {
-                Some(relative) => Take::Relative(relative, Carriage::Tlv),
-                None => Take::Whole,
-            },
+            (Container::Ts, Some(relative), _) => Take::Relative(relative, Carriage::Transport),
+            (Container::Tlv, Some(relative), _) => Take::Relative(relative, Carriage::Tlv),
+            (Container::Ts, None, Some(service)) => Take::Service(service),
             _ => Take::Whole,
         };
         if trace() {
@@ -262,6 +255,7 @@ mod tests {
         tsmf.start(StreamInfo {
             container: Container::Tlv,
             service: Some(1024),
+            relative_stream: None,
         })
         .expect("starts");
         let bytes = null_packets(4);
@@ -270,11 +264,12 @@ mod tests {
     }
 
     #[test]
-    fn the_reserved_service_asks_for_one_relative_stream() {
+    fn an_explicit_relative_stream_is_selected() {
         let mut tsmf = Tsmf::new();
         tsmf.start(StreamInfo {
             container: Container::Ts,
-            service: Some(zwsdk::abi::PART | 3),
+            service: None,
+            relative_stream: Some(3),
         })
         .expect("starts");
         assert_eq!(
@@ -285,14 +280,29 @@ mod tests {
     }
 
     #[test]
-    fn a_broadcast_service_is_still_a_service() {
+    fn an_explicit_relative_tlv_stream_is_selected() {
         let mut tsmf = Tsmf::new();
         tsmf.start(StreamInfo {
-            container: Container::Ts,
-            service: Some(1024),
+            container: Container::Tlv,
+            service: None,
+            relative_stream: Some(3),
         })
         .expect("starts");
-        assert_eq!(tsmf.multiplex.taking(), Take::Service(1024));
+        assert_eq!(tsmf.multiplex.taking(), Take::Relative(3, Carriage::Tlv));
+    }
+
+    #[test]
+    fn every_service_value_remains_a_service() {
+        for service in u16::MIN..=u16::MAX {
+            let mut tsmf = Tsmf::new();
+            tsmf.start(StreamInfo {
+                container: Container::Ts,
+                service: Some(service),
+                relative_stream: None,
+            })
+            .expect("starts");
+            assert_eq!(tsmf.multiplex.taking(), Take::Service(service));
+        }
     }
 
     #[test]
@@ -301,6 +311,7 @@ mod tests {
         tsmf.start(StreamInfo {
             container: Container::Ts,
             service: Some(1024),
+            relative_stream: None,
         })
         .expect("starts");
         let bytes = null_packets(64);
