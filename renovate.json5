@@ -4,6 +4,12 @@
   timezone: 'Asia/Tokyo',
   packageRules: [
     {
+      // FontContext を共有する Blitz の parley 依存と同時に更新する。
+      matchManagers: ['cargo'],
+      matchDepNames: ['parley'],
+      allowedVersions: '>=0.12.0 <0.13.0',
+    },
+    {
       matchUpdateTypes: ['minor', 'patch', 'pin', 'digest'],
       automerge: true,
     },

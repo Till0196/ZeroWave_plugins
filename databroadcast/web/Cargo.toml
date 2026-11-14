@@ -32,6 +32,7 @@ bytes = "1"
 data-url = "0.3"
 parlance = "0.1"
 keyboard-types = "0.7"
+# FontContext を Blitz と共有するため、Blitz が使う minor version に揃える。
 parley = { version = "0.12", default-features = false, features = ["std", "bytemuck"] }
 bytemuck = "1"
 zwsdk.workspace = true
