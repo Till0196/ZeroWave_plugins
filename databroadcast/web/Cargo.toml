@@ -15,7 +15,7 @@ blitz-html = { git = "https://github.com/Till0196/blitz", rev = "7646a04c8a3f75f
 blitz-paint = { git = "https://github.com/Till0196/blitz", rev = "7646a04c8a3f75f25fef1543240949aa98873ee9", default-features = false, features = ["svg", "custom-widget"] }
 blitz-traits = { git = "https://github.com/Till0196/blitz", rev = "7646a04c8a3f75f25fef1543240949aa98873ee9", default-features = false }
 blitz-vibey-script = { git = "https://github.com/Till0196/blitz", rev = "7646a04c8a3f75f25fef1543240949aa98873ee9", default-features = false }
-anyrender = "0.14"
+anyrender = "0.15"
 anyrender_vello_cpu = "0.18"
 peniko = "0.6"
 kurbo = "0.13"

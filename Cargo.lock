@@ -66,12 +66,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "anyrender"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6fb671c97c38d56a3cb01f9f7ba1eaaf5dadddcce6c3acda7420bf601050ff77"
+dependencies = [
+ "image_filters_types",
+ "kurbo",
+ "peniko",
+ "raw-window-handle",
+ "smallvec",
+]
+
+[[package]]
 name = "anyrender_svg"
 version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39327debd1bdca190d086c107825a5dc4c665be31e99e5c0854345a050d08cad"
 dependencies = [
- "anyrender",
+ "anyrender 0.14.0",
  "image",
  "kurbo",
  "peniko",
@@ -84,7 +97,7 @@ version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a09d9356dd2b2f032345711a350c0e2326a854cb5070f899265bc80fb33884b1"
 dependencies = [
- "anyrender",
+ "anyrender 0.14.0",
  "bytemuck",
  "color",
  "debug_timer 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -194,7 +207,7 @@ version = "0.3.0-beta.3"
 source = "git+https://github.com/Till0196/blitz?rev=7646a04c8a3f75f25fef1543240949aa98873ee9#7646a04c8a3f75f25fef1543240949aa98873ee9"
 dependencies = [
  "accesskit",
- "anyrender",
+ "anyrender 0.14.0",
  "app_units",
  "atomic_refcell",
  "bitflags",
@@ -252,7 +265,7 @@ name = "blitz-paint"
 version = "0.3.0-beta.3"
 source = "git+https://github.com/Till0196/blitz?rev=7646a04c8a3f75f25fef1543240949aa98873ee9#7646a04c8a3f75f25fef1543240949aa98873ee9"
 dependencies = [
- "anyrender",
+ "anyrender 0.14.0",
  "anyrender_svg",
  "blitz-dom",
  "blitz-traits",
@@ -1818,6 +1831,17 @@ checksum = "525e9ff3e1a4be2fbea1fdf0e98686a6d98b4d8f937e1bf7402245af1909e8c3"
 dependencies = [
  "byteorder-lite",
  "quick-error",
+]
+
+[[package]]
+name = "image_filters_types"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9184827780888f6c0f664837d309ac0d2f0adb05f313ab9fed8a00c0bb042f21"
+dependencies = [
+ "kurbo",
+ "peniko",
+ "smallvec",
 ]
 
 [[package]]
@@ -3989,7 +4013,7 @@ dependencies = [
 name = "web"
 version = "0.1.0"
 dependencies = [
- "anyrender",
+ "anyrender 0.15.0",
  "anyrender_vello_cpu",
  "blitz-dom",
  "blitz-html",
