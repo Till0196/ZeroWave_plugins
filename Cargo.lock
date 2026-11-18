@@ -66,12 +66,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "anyrender"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6fb671c97c38d56a3cb01f9f7ba1eaaf5dadddcce6c3acda7420bf601050ff77"
+dependencies = [
+ "image_filters_types",
+ "kurbo",
+ "peniko",
+ "raw-window-handle",
+ "smallvec",
+]
+
+[[package]]
 name = "anyrender_svg"
 version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39327debd1bdca190d086c107825a5dc4c665be31e99e5c0854345a050d08cad"
 dependencies = [
- "anyrender",
+ "anyrender 0.14.0",
  "image",
  "kurbo",
  "peniko",
@@ -80,19 +93,19 @@ dependencies = [
 
 [[package]]
 name = "anyrender_vello_cpu"
-version = "0.18.0"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a09d9356dd2b2f032345711a350c0e2326a854cb5070f899265bc80fb33884b1"
+checksum = "7d67fb8c73caa477541d7a52914bc534feca89d8c20f8a09c9ebe5d32646f8f7"
 dependencies = [
- "anyrender",
+ "anyrender 0.15.0",
  "bytemuck",
  "color",
  "debug_timer 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "glifo",
+ "glifo 0.5.0",
  "kurbo",
  "peniko",
- "vello_common",
- "vello_cpu",
+ "vello_common 0.4.0",
+ "vello_cpu 0.4.0",
 ]
 
 [[package]]
@@ -194,7 +207,7 @@ version = "0.3.0-beta.3"
 source = "git+https://github.com/Till0196/blitz?rev=7646a04c8a3f75f25fef1543240949aa98873ee9#7646a04c8a3f75f25fef1543240949aa98873ee9"
 dependencies = [
  "accesskit",
- "anyrender",
+ "anyrender 0.14.0",
  "app_units",
  "atomic_refcell",
  "bitflags",
@@ -252,7 +265,7 @@ name = "blitz-paint"
 version = "0.3.0-beta.3"
 source = "git+https://github.com/Till0196/blitz?rev=7646a04c8a3f75f25fef1543240949aa98873ee9#7646a04c8a3f75f25fef1543240949aa98873ee9"
 dependencies = [
- "anyrender",
+ "anyrender 0.14.0",
  "anyrender_svg",
  "blitz-dom",
  "blitz-traits",
@@ -1225,6 +1238,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f4beca3cb2444e3304ac30843cc091f44ed58932353cd492ce740067bfce6b12"
 
 [[package]]
+name = "fearless_simd"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "629c9d6b6f30b5604089e0980f4d924a013aacb1654a6cdf5d3d852224f68651"
+
+[[package]]
+name = "fearless_simd_macros"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3e91d94c6885390b81782d7ee60fd6583b33907333a8b340de25ccf468353315"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 3.0.5",
+]
+
+[[package]]
 name = "find-msvc-tools"
 version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1512,7 +1542,24 @@ dependencies = [
  "png",
  "skrifa 0.44.0",
  "smallvec",
- "vello_common",
+ "vello_common 0.3.0",
+]
+
+[[package]]
+name = "glifo"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9ae2e3b09ea1cc45c994a405e4d4154901d4caa867d3e1be3a02be641f62fefa"
+dependencies = [
+ "bytemuck",
+ "foldhash",
+ "hashbrown 0.17.1",
+ "log",
+ "peniko",
+ "png",
+ "skrifa 0.49.0",
+ "smallvec",
+ "vello_common 0.4.0",
 ]
 
 [[package]]
@@ -1818,6 +1865,17 @@ checksum = "525e9ff3e1a4be2fbea1fdf0e98686a6d98b4d8f937e1bf7402245af1909e8c3"
 dependencies = [
  "byteorder-lite",
  "quick-error",
+]
+
+[[package]]
+name = "image_filters_types"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9184827780888f6c0f664837d309ac0d2f0adb05f313ab9fed8a00c0bb042f21"
+dependencies = [
+ "kurbo",
+ "peniko",
+ "smallvec",
 ]
 
 [[package]]
@@ -3687,7 +3745,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "73c2fbe53548bcd25c8ff42f75a93770a8611a16b37bee56d7ef7b44e36027f1"
 dependencies = [
  "bytemuck",
- "fearless_simd",
+ "fearless_simd 0.7.0",
+ "guillotiere",
+ "log",
+ "peniko",
+ "png",
+ "smallvec",
+ "thiserror",
+]
+
+[[package]]
+name = "vello_common"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6d9447018538224861c1bd825471dcc67ffa973c97de666bf6296b72dbb2f166"
+dependencies = [
+ "bytemuck",
+ "fearless_simd 1.2.0",
+ "fearless_simd_macros",
  "guillotiere",
  "log",
  "peniko",
@@ -3703,10 +3778,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ed1fec424fbba6acf6cbc78bb526447eb77590d95f40419d598870fe37535212"
 dependencies = [
  "bytemuck",
- "glifo",
+ "glifo 0.4.0",
  "hashbrown 0.17.1",
  "png",
- "vello_common",
+ "vello_common 0.3.0",
+]
+
+[[package]]
+name = "vello_cpu"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5d6b3db720c5d3aa8783cb1c042d8a77142df70bd0f742dc9005f6d6efe33ebf"
+dependencies = [
+ "bytemuck",
+ "fearless_simd 1.2.0",
+ "fearless_simd_macros",
+ "glifo 0.5.0",
+ "hashbrown 0.17.1",
+ "vello_common 0.4.0",
 ]
 
 [[package]]
@@ -3989,7 +4078,7 @@ dependencies = [
 name = "web"
 version = "0.1.0"
 dependencies = [
- "anyrender",
+ "anyrender 0.14.0",
  "anyrender_vello_cpu",
  "blitz-dom",
  "blitz-html",
@@ -4492,7 +4581,7 @@ source = "git+https://github.com/Till0196/ZeroWave#84339129efaf3bd752bb43329cd62
 dependencies = [
  "bytemuck",
  "coax",
- "glifo",
+ "glifo 0.4.0",
  "memmap2",
  "parlance",
  "parley",
@@ -4501,7 +4590,7 @@ dependencies = [
  "serde_json",
  "skrifa 0.49.0",
  "tracing",
- "vello_cpu",
+ "vello_cpu 0.3.0",
  "wasmtime",
  "windows",
 ]
