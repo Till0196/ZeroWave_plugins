@@ -10,13 +10,13 @@ license.workspace = true
 workspace = true
 
 [dependencies]
-blitz-dom = { git = "https://github.com/Till0196/blitz", rev = "7646a04c8a3f75f25fef1543240949aa98873ee9", default-features = false, features = ["svg", "autofocus", "custom-widget", "floats", "woff"] }
-blitz-html = { git = "https://github.com/Till0196/blitz", rev = "7646a04c8a3f75f25fef1543240949aa98873ee9", default-features = false }
-blitz-paint = { git = "https://github.com/Till0196/blitz", rev = "7646a04c8a3f75f25fef1543240949aa98873ee9", default-features = false, features = ["svg", "custom-widget"] }
-blitz-traits = { git = "https://github.com/Till0196/blitz", rev = "7646a04c8a3f75f25fef1543240949aa98873ee9", default-features = false }
-blitz-vibey-script = { git = "https://github.com/Till0196/blitz", rev = "7646a04c8a3f75f25fef1543240949aa98873ee9", default-features = false }
-anyrender = "0.14"
-anyrender_vello_cpu = "0.18"
+blitz-dom = { git = "https://github.com/Till0196/blitz", rev = "b7b018d0fcf9439498c6017baa4913e977389f46", default-features = false, features = ["svg", "autofocus", "custom-widget", "floats", "woff"] }
+blitz-html = { git = "https://github.com/Till0196/blitz", rev = "b7b018d0fcf9439498c6017baa4913e977389f46", default-features = false }
+blitz-paint = { git = "https://github.com/Till0196/blitz", rev = "b7b018d0fcf9439498c6017baa4913e977389f46", default-features = false, features = ["svg", "custom-widget"] }
+blitz-traits = { git = "https://github.com/Till0196/blitz", rev = "b7b018d0fcf9439498c6017baa4913e977389f46", default-features = false }
+blitz-vibey-script = { git = "https://github.com/Till0196/blitz", rev = "b7b018d0fcf9439498c6017baa4913e977389f46", default-features = false }
+anyrender = "0.15"
+anyrender_vello_cpu = "0.19"
 peniko = "0.6"
 kurbo = "0.13"
 url = "2"
@@ -31,9 +31,9 @@ bml = { path = "../bml" }
 bytes = "1"
 data-url = "0.3"
 parlance = "0.1"
-keyboard-types = "0.7"
+keyboard-types = "0.8"
 # FontContext を Blitz と共有するため、Blitz が使う minor version に揃える。
-parley = { version = "0.12", default-features = false, features = ["std", "bytemuck"] }
+parley = { version = "0.13", default-features = false, features = ["std", "bytemuck"] }
 bytemuck = "1"
 zwsdk.workspace = true
 http = "1"

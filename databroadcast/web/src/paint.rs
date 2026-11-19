@@ -48,7 +48,14 @@ impl blitz_dom::Widget for Hole {
         let rect = Rect::new(0.0, 0.0, f64::from(width), f64::from(height));
         let level = HOLE.with(|h| h.get());
         let colour = Color::from_rgba8(level, level, level, 255);
-        scene.fill(Fill::NonZero, Affine::IDENTITY, colour, None, &rect);
+        scene.fill(
+            Fill::NonZero,
+            Affine::IDENTITY,
+            colour,
+            None,
+            &rect,
+            anyrender::AntiAliasing::Enabled,
+        );
         scene
     }
 }

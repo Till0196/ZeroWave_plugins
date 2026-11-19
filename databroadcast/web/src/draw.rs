@@ -12,7 +12,7 @@ use parley::fontique::{
     Blob, Collection, CollectionOptions, FamilyId, FontInfoOverride, GenericFamily, SourceCache,
 };
 
-use anyrender::{PaintScene, Scene};
+use anyrender::{AntiAliasing, PaintScene, Scene};
 use kurbo::{Affine, BezPath, Point, Rect, Shape, Stroke, Vec2};
 pub use parley::FontContext;
 use parley::{FontFamily, FontWeight, LayoutContext, PositionedLayoutItem, StyleProperty};
@@ -233,8 +233,14 @@ impl Canvas {
         let rect = Rect::new(x, y, x + w, y + h);
         let paint = self.paint_of(self.state.fill);
         let transform = self.state.transform;
-        self.scene
-            .fill(Fill::NonZero, transform, &paint, None, &rect);
+        self.scene.fill(
+            Fill::NonZero,
+            transform,
+            &paint,
+            None,
+            &rect,
+            AntiAliasing::Enabled,
+        );
     }
 
     pub fn stroke_rect(&mut self, x: f64, y: f64, w: f64, h: f64) {
@@ -245,7 +251,14 @@ impl Canvas {
         let paint = self.paint_of(self.state.stroke);
         let transform = self.state.transform;
         let stroke = Stroke::new(self.state.line_width);
-        self.scene.stroke(&stroke, transform, &paint, None, &rect);
+        self.scene.stroke(
+            &stroke,
+            transform,
+            &paint,
+            None,
+            &rect,
+            AntiAliasing::Enabled,
+        );
     }
 
     pub fn clear_rect(&mut self, x: f64, y: f64, w: f64, h: f64) {
@@ -278,6 +291,7 @@ impl Canvas {
             &anyrender::Paint::Solid(Color::BLACK),
             None,
             &rect,
+            AntiAliasing::Enabled,
         );
         self.scene.pop_layer();
     }
@@ -379,6 +393,7 @@ impl Canvas {
                     transform,
                     glyph_transform,
                     glyphs,
+                    AntiAliasing::Enabled,
                 );
             }
         }
@@ -508,8 +523,14 @@ impl Canvas {
         }
         let paint = self.paint_of(self.state.fill);
         let (transform, path) = (self.state.transform, self.path.clone());
-        self.scene
-            .fill(Fill::NonZero, transform, &paint, None, &path);
+        self.scene.fill(
+            Fill::NonZero,
+            transform,
+            &paint,
+            None,
+            &path,
+            AntiAliasing::Enabled,
+        );
     }
 
     pub fn stroke(&mut self) {
@@ -519,7 +540,14 @@ impl Canvas {
         let paint = self.paint_of(self.state.stroke);
         let (transform, path) = (self.state.transform, self.path.clone());
         let stroke = Stroke::new(self.state.line_width);
-        self.scene.stroke(&stroke, transform, &paint, None, &path);
+        self.scene.stroke(
+            &stroke,
+            transform,
+            &paint,
+            None,
+            &path,
+            AntiAliasing::Enabled,
+        );
     }
 
     pub fn clip(&mut self) {

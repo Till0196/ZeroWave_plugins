@@ -8,10 +8,10 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use blitz_dom::{Document, DocumentConfig, NodeId};
-use blitz_traits::events::{BlitzKeyEvent, DomEvent, DomEventData, KeyState};
+use blitz_traits::events::{BlitzKeyEvent, DomEvent, DomEventData, EventDispatchSource, KeyState};
 use blitz_traits::shell::{ColorScheme, Viewport};
 use blitz_vibey_script::ScriptDocument;
-use keyboard_types::{Code, Key, Location, Modifiers};
+use keyboard_types::{Code, Key, Location, Modifiers, NamedKey};
 use url::Url;
 
 use crate::api::{Bridge, Host, Request, SharedBridge};
@@ -111,23 +111,23 @@ fn json_string(text: &str) -> String {
 
 fn key_of(code: u16) -> Key {
     match code {
-        38 => Key::ArrowUp,
-        40 => Key::ArrowDown,
-        37 => Key::ArrowLeft,
-        39 => Key::ArrowRight,
-        13 => Key::Enter,
-        461 => Key::GoBack,
-        403 => Key::ColorF0Red,
-        404 => Key::ColorF1Green,
-        405 => Key::ColorF2Yellow,
-        406 => Key::ColorF3Blue,
-        460 => Key::Subtitle,
-        33 => Key::PageUp,
-        34 => Key::PageDown,
-        9 => Key::Tab,
+        38 => Key::Named(NamedKey::ArrowUp),
+        40 => Key::Named(NamedKey::ArrowDown),
+        37 => Key::Named(NamedKey::ArrowLeft),
+        39 => Key::Named(NamedKey::ArrowRight),
+        13 => Key::Named(NamedKey::Enter),
+        461 => Key::Named(NamedKey::GoBack),
+        403 => Key::Named(NamedKey::ColorF0Red),
+        404 => Key::Named(NamedKey::ColorF1Green),
+        405 => Key::Named(NamedKey::ColorF2Yellow),
+        406 => Key::Named(NamedKey::ColorF3Blue),
+        460 => Key::Named(NamedKey::Subtitle),
+        33 => Key::Named(NamedKey::PageUp),
+        34 => Key::Named(NamedKey::PageDown),
+        9 => Key::Named(NamedKey::Tab),
         48..=57 => Key::Character(((b'0' + (code - 48) as u8) as char).to_string()),
         1001 => Key::Character(String::from("d")),
-        _ => Key::Unidentified,
+        _ => Key::Named(NamedKey::Unidentified),
     }
 }
 
@@ -456,8 +456,11 @@ impl App {
                 KeyState::Pressed => DomEventData::KeyDown(event),
                 KeyState::Released => DomEventData::KeyUp(event),
             };
-            self.document
-                .dispatch_dom_event(DomEvent::new(target, data));
+            self.document.dispatch_dom_event(DomEvent::new(
+                target,
+                data,
+                EventDispatchSource::Input,
+            ));
         }
         // 決定はフォーカスのある要素の `click` にする（STD-B62 第二分冊、TR-B39）。既定の動作は実行しない
         // （文書の `onclick` が自分で移るので二重になる）。
@@ -542,7 +545,7 @@ impl App {
         // 調べるためのイベントは文書そのものへ送る（途中で `stopPropagation` するアプリがある）。
         let target = self.document.inner().root_node().id;
         let event = BlitzKeyEvent {
-            key: Key::Unidentified,
+            key: Key::Named(NamedKey::Unidentified),
             code: Code::Unidentified,
             modifiers: Modifiers::empty(),
             location: Location::Standard,
@@ -551,8 +554,11 @@ impl App {
             state: KeyState::Released,
             text: None,
         };
-        self.document
-            .dispatch_dom_event(DomEvent::new(target, DomEventData::KeyUp(event)));
+        self.document.dispatch_dom_event(DomEvent::new(
+            target,
+            DomEventData::KeyUp(event),
+            EventDispatchSource::UserAgent,
+        ));
         self.keyed = self.document.with_context(crate::api::dom::define_key_code);
     }
 
