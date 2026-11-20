@@ -35,7 +35,8 @@ zwsdk::export_layer!(
     Engine,
     name = "データ放送",
     version = "0.1.2",
-    layer = r#"{"at":"databroadcast","wants":["streams","captions","keys","clock","area","broadcast","popup"]}"#,
+    // キーの後はすぐ描き直すので、その遅れが目立たない回数にする。高いリフレッシュレートの画面でも回しすぎない。
+    layer = r#"{"at":"databroadcast","wants":["streams","captions","keys","clock","area","broadcast","popup"],"fps":60}"#,
     // 設定はこのプラグインが持つ（`plugins/databroadcast.toml`）。
     config = r#"[
         {"key":"net","kind":"bool","default":"false",
