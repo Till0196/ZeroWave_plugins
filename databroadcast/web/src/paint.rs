@@ -194,6 +194,33 @@ mod tests {
         );
     }
 
+    /// CSS 2.1 付録 E: インラインの要素の背景は、中の入れ子のインラインの要素の所にも塗る。
+    #[test]
+    fn an_inline_background_covers_a_nested_inline() {
+        let faces = crate::fonts::Faces::find();
+        if faces.is_empty() {
+            zwsdk::plug::info("フォントが無いので飛ばす");
+            return;
+        }
+        let html = "<html><body style='margin:0;background:#fff'>\
+            <div style='position:absolute;left:0;top:0;font-size:40px;line-height:60px;color:transparent'>\
+            <span style='background:#00f'>あ<span>AA</span>あ</span></div></body></html>";
+        let mut still = Still::open(html, (300, 60), 1.0, Files::default(), &faces);
+        let (buffer, width, _) = still.paint();
+        // 行の真ん中の高さで、青い所が途切れずに続く。
+        let blue: Vec<bool> = (0..width)
+            .map(|x| pixel(&buffer, width, x, 30) == [0, 0, 255, 255])
+            .collect();
+        let first = blue.iter().position(|b| *b).expect("青い所が無い");
+        let last = blue.iter().rposition(|b| *b).expect("青い所が無い");
+        assert!(last - first > 80, "青い所が短い: {first}〜{last}");
+        // 字形の列の境目は塗りの縁が重なって少し薄くなるので、白に近い所が無いことを見る。
+        let white: Vec<u32> = (first as u32..=last as u32)
+            .filter(|&x| pixel(&buffer, width, x, 30)[0] > 128)
+            .collect();
+        assert!(white.is_empty(), "青い所が途切れている: {white:?}");
+    }
+
     #[test]
     fn text_shadow_is_painted_under_the_glyphs() {
         let faces = crate::fonts::Faces::find();

@@ -189,7 +189,7 @@ checksum = "b588b76d00fde79687d7646a9b5bdf3cc0f655e0bbd080335a95d7e96f3587da"
 [[package]]
 name = "blitz-dom"
 version = "0.3.0-beta.4"
-source = "git+https://github.com/Till0196/blitz?rev=b7b018d0fcf9439498c6017baa4913e977389f46#b7b018d0fcf9439498c6017baa4913e977389f46"
+source = "git+https://github.com/Till0196/blitz?rev=d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5#d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5"
 dependencies = [
  "accesskit",
  "anyrender",
@@ -200,7 +200,7 @@ dependencies = [
  "color",
  "cssparser",
  "cursor-icon",
- "debug_timer 0.1.3 (git+https://github.com/Till0196/blitz?rev=b7b018d0fcf9439498c6017baa4913e977389f46)",
+ "debug_timer 0.1.3 (git+https://github.com/Till0196/blitz?rev=d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5)",
  "euclid",
  "html-escape",
  "icu_locale_core",
@@ -238,7 +238,7 @@ dependencies = [
 [[package]]
 name = "blitz-html"
 version = "0.3.0-beta.4"
-source = "git+https://github.com/Till0196/blitz?rev=b7b018d0fcf9439498c6017baa4913e977389f46#b7b018d0fcf9439498c6017baa4913e977389f46"
+source = "git+https://github.com/Till0196/blitz?rev=d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5#d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5"
 dependencies = [
  "blitz-dom",
  "blitz-traits",
@@ -249,7 +249,7 @@ dependencies = [
 [[package]]
 name = "blitz-paint"
 version = "0.3.0-beta.4"
-source = "git+https://github.com/Till0196/blitz?rev=b7b018d0fcf9439498c6017baa4913e977389f46#b7b018d0fcf9439498c6017baa4913e977389f46"
+source = "git+https://github.com/Till0196/blitz?rev=d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5#d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5"
 dependencies = [
  "anyrender",
  "anyrender_svg",
@@ -269,7 +269,7 @@ dependencies = [
 [[package]]
 name = "blitz-traits"
 version = "0.3.0-beta.4"
-source = "git+https://github.com/Till0196/blitz?rev=b7b018d0fcf9439498c6017baa4913e977389f46#b7b018d0fcf9439498c6017baa4913e977389f46"
+source = "git+https://github.com/Till0196/blitz?rev=d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5#d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5"
 dependencies = [
  "atomic_refcell",
  "bitflags",
@@ -285,7 +285,7 @@ dependencies = [
 [[package]]
 name = "blitz-vibey-script"
 version = "0.3.0-beta.4"
-source = "git+https://github.com/Till0196/blitz?rev=b7b018d0fcf9439498c6017baa4913e977389f46#b7b018d0fcf9439498c6017baa4913e977389f46"
+source = "git+https://github.com/Till0196/blitz?rev=d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5#d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5"
 dependencies = [
  "blitz-dom",
  "blitz-html",
@@ -1011,7 +1011,7 @@ checksum = "da220af51a1a335e9a930beaaef53d261e41ea9eecfb3d973a3ddae1a7284b9c"
 [[package]]
 name = "debug_timer"
 version = "0.1.3"
-source = "git+https://github.com/Till0196/blitz?rev=b7b018d0fcf9439498c6017baa4913e977389f46#b7b018d0fcf9439498c6017baa4913e977389f46"
+source = "git+https://github.com/Till0196/blitz?rev=d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5#d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5"
 
 [[package]]
 name = "deranged"
@@ -3324,7 +3324,7 @@ dependencies = [
 [[package]]
 name = "stylo_taffy"
 version = "0.3.0-beta.4"
-source = "git+https://github.com/Till0196/blitz?rev=b7b018d0fcf9439498c6017baa4913e977389f46#b7b018d0fcf9439498c6017baa4913e977389f46"
+source = "git+https://github.com/Till0196/blitz?rev=d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5#d23d7759f7ee2b08be46fc13bdf4cf6785dac9e5"
 dependencies = [
  "bitflags",
  "stylo",
