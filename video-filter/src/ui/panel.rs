@@ -29,7 +29,7 @@ pub(super) fn panel_page(ctx: &Ctx) -> Page {
         label: String::from("なし"),
         on: matches!(manual, Some(None)),
     });
-    let mut nodes = vec![line(
+    let chooser = line(
         "プリセット",
         vec![
             Inline::Chips {
@@ -39,14 +39,14 @@ pub(super) fn panel_page(ctx: &Ctx) -> Page {
             },
             Inline::Button(Button::new("settings", "設定…")),
         ],
-    )];
-    nodes.push(line(
+    );
+    let mut nodes = vec![line(
         "処理時間",
         vec![Inline::Text {
             text: load_text(ctx),
             tone: Tone::Muted,
         }],
-    ));
+    )];
     let mut files = filter.files(&chosen, At::Deinterlace);
     files.extend(filter.files(&chosen, At::Picture));
     let path = if files.is_empty() {
@@ -65,9 +65,16 @@ pub(super) fn panel_page(ctx: &Ctx) -> Page {
             tone: Tone::Plain,
         }],
     ));
+    // パネルを低くしてもプリセットの切り替えは上に残し、その下だけをスクロールする。
     Page {
         title: String::from("映像フィルター"),
-        nodes,
+        nodes: vec![
+            chooser,
+            Node::Scroll {
+                nodes,
+                foot: Vec::new(),
+            },
+        ],
         ..Page::default()
     }
 }

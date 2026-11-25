@@ -55,47 +55,48 @@ impl Menu {
         self.preset = self.preset.min(filter.presets.len().saturating_sub(1));
         let selected = filter.presets.get(self.preset);
         let used = selected.map_or(0, |p| filter.uses_of_preset(&p.name));
-        let left = vec![
-            Node::Table {
-                id: String::from("presets"),
-                columns: vec![Column::new("", 0.0)],
-                rows: filter
-                    .presets
-                    .iter()
-                    .enumerate()
-                    .map(|(i, preset)| {
-                        let uses = filter.uses_of_preset(&preset.name);
-                        Row {
-                            id: i.to_string(),
-                            cells: vec![Cell::with_sub(
-                                preset.name.clone(),
-                                if uses == 0 {
-                                    String::from("未使用")
-                                } else {
-                                    format!("自動選択 {uses} 件で使用中")
-                                },
-                            )],
-                            selected: i == self.preset,
-                            dim: false,
-                        }
-                    })
-                    .collect(),
-                empty: String::from("プリセットがありません"),
-            },
-            Node::Buttons {
-                buttons: vec![
-                    Button::new("new", "＋ 新規"),
-                    Button::new("copy", "複製").enabled(selected.is_some()),
-                    Button::new("remove", "削除").enabled(selected.is_some() && used == 0),
-                ],
-                right: false,
-            },
-        ];
+        let left = vec![Node::Table {
+            id: String::from("presets"),
+            columns: vec![Column::new("", 0.0)],
+            rows: filter
+                .presets
+                .iter()
+                .enumerate()
+                .map(|(i, preset)| {
+                    let uses = filter.uses_of_preset(&preset.name);
+                    Row {
+                        id: i.to_string(),
+                        cells: vec![Cell::with_sub(
+                            preset.name.clone(),
+                            if uses == 0 {
+                                String::from("未使用")
+                            } else {
+                                format!("自動選択 {uses} 件で使用中")
+                            },
+                        )],
+                        selected: i == self.preset,
+                        dim: false,
+                    }
+                })
+                .collect(),
+            empty: String::from("プリセットがありません"),
+        }];
+        let left_foot = vec![Node::Buttons {
+            buttons: vec![
+                Button::new("new", "＋ 新規"),
+                Button::new("copy", "複製").enabled(selected.is_some()),
+                Button::new("remove", "削除").enabled(selected.is_some() && used == 0),
+            ],
+            right: false,
+        }];
         let Some(preset) = selected else {
             return vec![Node::Columns {
                 width: 200.0,
                 left,
                 right: Vec::new(),
+                scroll: true,
+                left_foot,
+                right_foot: Vec::new(),
             }];
         };
         let applied = load().choose(target(ctx));
@@ -315,6 +316,9 @@ impl Menu {
             width: 200.0,
             left,
             right,
+            scroll: true,
+            left_foot,
+            right_foot: Vec::new(),
         }]
     }
 
@@ -441,7 +445,7 @@ impl Menu {
                 }
             })
             .collect();
-        let mut nodes = vec![
+        vec![
             Node::Buttons {
                 buttons: vec![Button::new("import", "＋ 追加…")],
                 right: true,
@@ -461,22 +465,26 @@ impl Menu {
                     removable: false,
                 }],
             ),
-            Node::Table {
-                id: String::from("shaders"),
-                columns: vec![
-                    Column::new("名前", 0.0),
-                    Column::new("種類", 100.0),
-                    Column::new("プリセット", 76.0).right(),
-                    Column::new("", 112.0),
-                ],
-                rows,
-                empty: String::from("シェーダーがありません"),
+            // 追加のボタンと種類の絞り込みは上に止めて、表だけをスクロールする。
+            Node::Scroll {
+                nodes: vec![Node::Table {
+                    id: String::from("shaders"),
+                    columns: vec![
+                        Column::new("名前", 0.0),
+                        Column::new("種類", 100.0),
+                        Column::new("プリセット", 76.0).right(),
+                        Column::new("", 112.0),
+                    ],
+                    rows,
+                    empty: String::from("シェーダーがありません"),
+                }],
+                foot: if self.error.is_empty() {
+                    Vec::new()
+                } else {
+                    vec![note(self.error.clone(), Tone::Bad)]
+                },
             },
-        ];
-        if !self.error.is_empty() {
-            nodes.push(note(self.error.clone(), Tone::Bad));
-        }
-        nodes
+        ]
     }
 }
 

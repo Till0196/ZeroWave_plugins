@@ -29,15 +29,16 @@ fn the_panel_switches_presets() {
     let mut menu = <Menu as zwsdk::plug::Ui>::new();
     let ctx = Ctx::default();
     let page = <Menu as zwsdk::plug::Ui>::page(&mut menu, "filter", &ctx);
-    let labels: Vec<&str> = page
-        .nodes
-        .iter()
-        .filter_map(|node| match node {
-            Node::Line { label, .. } => Some(label.as_str()),
-            _ => None,
-        })
-        .collect();
-    assert_eq!(labels, ["プリセット", "処理時間", "パス"]);
+    let label = |node: &Node| match node {
+        Node::Line { label, .. } => label.clone(),
+        _ => String::new(),
+    };
+    let [chooser, Node::Scroll { nodes, .. }] = page.nodes.as_slice() else {
+        panic!("{:?}", page.nodes);
+    };
+    assert_eq!(label(chooser), "プリセット");
+    let scrolled: Vec<String> = nodes.iter().map(label).collect();
+    assert_eq!(scrolled, ["処理時間", "パス"]);
     let Node::Line { items, .. } = &page.nodes[0] else {
         panic!("{:?}", page.nodes[0]);
     };

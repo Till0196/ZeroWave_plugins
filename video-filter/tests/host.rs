@@ -7,7 +7,7 @@ use std::collections::BTreeMap;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, RwLock};
 
-use zwsdk::ui::{Ctx, Event, MenuItem, Notice};
+use zwsdk::ui::{Ctx, Event, MenuItem, Node, Notice};
 use zwsdk::video::{At, Device, Env, Format, Program};
 
 fn wasm(sub: &str) -> Option<PathBuf> {
@@ -225,7 +225,10 @@ fn the_plugin_works_end_to_end() {
     );
 
     let panel = ui.page("filter", &ctx).expect("パネル");
-    assert_eq!(panel.nodes.len(), 3, "{panel:?}");
+    assert!(
+        matches!(panel.nodes.as_slice(), [_, Node::Scroll { nodes, .. }] if nodes.len() == 2),
+        "{panel:?}"
+    );
     let page = ui.page("main", &ctx).expect("ページ");
     assert_eq!(page.tabs.len(), 4);
     let event = |id: &str, value: &str| Event {
